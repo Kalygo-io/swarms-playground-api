@@ -20,6 +20,13 @@ from pydantic import BaseModel, Field
 
 # vvv REPLACING vvv
 
+class ChatMessageResponse(BaseModel):
+    role: str = Field(
+        ...,
+        description="The role of the message sender. Could be 'user', 'assistant', or 'system'.",
+    )
+    content: str = None
+
 class ChatCompletionResponseChoice(BaseModel):
     index: int
     message: ChatMessageResponse
