@@ -5,21 +5,23 @@
 
 - `echo -n "YOUR_SECRET_VALUE" | gcloud secrets create SECRET_NAME --data-file=-`
 - ie: `echo -n "your_anthropic_api_key" | gcloud secrets create ANTHROPIC_API_KEY --data-file=-`
-- ie: `echo -n "render.com url" | gcloud secrets create POSTGRES_URL --data-file=-`
+- ie: `echo -n "openai api key" | gcloud secrets create OPENAI_API_KEY --data-file=-`
+
 - ie: `echo -n "key for signing JWT" | gcloud secrets create AUTH_SECRET_KEY --data-file=-`
 - ie: `echo -n "hashing algorithm" | gcloud secrets create AUTH_ALGORITHM --data-file=-`
+
+- ie: `echo -n "render.com url" | gcloud secrets create POSTGRES_URL --data-file=-`
+
 - ie: `echo -n "langsmith endpoint" | gcloud secrets create LANGCHAIN_ENDPOINT --data-file=-`
 - ie: `echo -n "langsmith API keys" | gcloud secrets create LANGCHAIN_API_KEY --data-file=-`
+
+- ie: `echo -n "cookie domain" | gcloud secrets create COOKIE_DOMAIN --data-file=-`
+
 - ie: `echo -n "embedding api url" | gcloud secrets create EMBEDDING_API_URL --data-file=-`
 - ie: `echo -n "pinecone api key" | gcloud secrets create PINECONE_API_KEY --data-file=-`
-- ie: `echo -n "openai api key" | gcloud secrets create OPENAI_API_KEY --data-file=-`
-- ie: `echo -n "cookie domain" | gcloud secrets create COOKIE_DOMAIN --data-file=-`
 - ie: `echo -n "REPLICATE_API_TOKEN" | gcloud secrets create REPLICATE_API_TOKEN --data-file=-`
-
 - ie: `echo -n "all-minilm-l6-v2-384-dims" | gcloud secrets create PINECONE_ALL_MINILM_L6_V2_INDEX --data-file=-`
 - ie: `echo -n "imagebind-1024-dims" | gcloud secrets create PINECONE_IMAGEBIND_1024_DIMS_INDEX --data-file=-`
-
-
 
 - CHECK OUT: `https://console.cloud.google.com/security/secret-manager?project=fullstack-rag`
 

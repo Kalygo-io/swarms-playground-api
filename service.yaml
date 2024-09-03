@@ -1,22 +1,22 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: fullstack-rag-fastapi-service
+  name: kalygo3-fastapi-service
 spec:
   template:
     spec:
       containers:
-        - image: us-central1-docker.pkg.dev/fullstack-rag/fullstack-rag-fastapi/fullstack-rag-fastapi
+        - image: us-central1-docker.pkg.dev/kalygo-v3/kalygo3-fastapi/kalygo3-fastapi
           env:
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: ANTHROPIC_API_KEY
                   key: latest
-            - name: POSTGRES_URL
+            - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: POSTGRES_URL
+                  name: OPENAI_API_KEY
                   key: latest
             - name: AUTH_SECRET_KEY
               valueFrom:
@@ -28,6 +28,11 @@ spec:
                 secretKeyRef:
                   name: AUTH_ALGORITHM
                   key: latest
+            - name: POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: POSTGRES_URL
+                  key: latest
             - name: LANGCHAIN_ENDPOINT
               valueFrom:
                 secretKeyRef:
@@ -38,48 +43,53 @@ spec:
                 secretKeyRef:
                   name: LANGCHAIN_API_KEY
                   key: latest
-            - name: SERPER_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: SERPER_API_KEY
-                  key: latest
-            - name: EMBEDDING_API_URL
-              valueFrom:
-                secretKeyRef:
-                  name: EMBEDDING_API_URL
-                  key: latest
-            - name: PINECONE_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: PINECONE_API_KEY
-                  key: latest
             
-            - name: PINECONE_ALL_MINILM_L6_V2_INDEX
-              valueFrom:
-                secretKeyRef:
-                  name: PINECONE_ALL_MINILM_L6_V2_INDEX
-                  key: latest
-
-            - name: PINECONE_IMAGEBIND_1024_DIMS_INDEX
-              valueFrom:
-                secretKeyRef:
-                  name: PINECONE_IMAGEBIND_1024_DIMS_INDEX
-                  key: latest
-            
-            - name: OPENAI_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: OPENAI_API_KEY
-                  key: latest
             - name: COOKIE_DOMAIN
               valueFrom:
                 secretKeyRef:
                   name: COOKIE_DOMAIN
                   key: latest
-            - name: REPLICATE_API_TOKEN
+
+            - name: PINECONE_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: REPLICATE_API_TOKEN
-                  key: latest
+                  name: PINECONE_API_KEY
+                  key: latest      
+
+            # - name: SERPER_API_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: SERPER_API_KEY
+            #       key: latest
+            
+            # - name: EMBEDDING_API_URL
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: EMBEDDING_API_URL
+            #       key: latest
+            
+            # - name: PINECONE_API_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: PINECONE_API_KEY
+            #       key: latest
+            
+            # - name: PINECONE_ALL_MINILM_L6_V2_INDEX
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: PINECONE_ALL_MINILM_L6_V2_INDEX
+            #       key: latest
+
+            # - name: PINECONE_IMAGEBIND_1024_DIMS_INDEX
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: PINECONE_IMAGEBIND_1024_DIMS_INDEX
+            #       key: latest
+            
+            # - name: REPLICATE_API_TOKEN
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: REPLICATE_API_TOKEN
+            #       key: latest
           ports:
             - containerPort: 8080
