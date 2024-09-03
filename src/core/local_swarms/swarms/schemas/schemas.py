@@ -5,9 +5,11 @@ import uuid
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
-from swarms_cloud.schema.agent_api_schemas import (
-    AgentChatCompletionResponse,
-)
+
+from core.schemas.SwarmsCloudSchemas import AgentChatCompletionResponse
+# from swarms_cloud.schema.agent_api_schemas import (
+#     AgentChatCompletionResponse,
+# )
 
 
 class Step(BaseModel):

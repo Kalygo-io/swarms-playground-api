@@ -99,4 +99,5 @@ Documenting process of deploying Kalygo 3.0 A.I. API to GCP
 
 ## 4. Cloud Run
 
-- gcloud run services replace service.yaml --region us-east1
+- `gcloud run services replace service.yaml --region us-east1`
+- `gcloud run services set-iam-policy kalygo3-nextjs-service gcr-service-policy.yaml --region us-east1`
