@@ -1,6 +1,9 @@
+from typing import Any, Optional
 from fastapi import APIRouter, Request
 # from langchain_anthropic import ChatAnthropic
 from langchain_postgres import PostgresChatMessageHistory
+
+from langchain_openai import ChatOpenAI
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -15,17 +18,17 @@ from fastapi.responses import StreamingResponse
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.callbacks import LangChainTracer
 import psycopg
-from src.core.local_swarms.swarms.models.popular_llms import OpenAIChatLLM
+# from src.core.local_swarms.swarms.models.popular_llms import OpenAIChatLLM
 from src.deps import jwt_dependency
 
 # vvv SWARM imports vvv
-from src.core.local_swarms.swarms.structs import Agent
-from src.core.local_swarms.swarms.models import Anthropic
-from src.core.local_swarms.swarms.models import OpenAI
-from src.core.local_swarms.swarms.structs.rearrange import AgentRearrange
+# from src.core.local_swarms.swarms.structs import Agent
+# from src.core.local_swarms.swarms.models import Anthropic
+# from src.core.local_swarms.swarms.models import OpenAI
+# from src.core.local_swarms.swarms.structs.rearrange import AgentRearrange
 
-from src.core.local_swarms.swarms.utils.loguru_logger import logger
-from src.core.local_swarms.swarms.models import Anthropic
+# from src.core.local_swarms.swarms.utils.loguru_logger import logger
+# from src.core.local_swarms.swarms.models import Anthropic
 # ^^^ SWARM imports ^^^
 
 limiter = Limiter(key_func=get_remote_address)
@@ -45,6 +48,30 @@ callbacks = [
 #   )
 ]
 
+class Agent():
+    def __init__(
+        self,
+        llm: Optional[Any] = None,
+        agent_name: Optional[str] = "",
+        system_prompt: Optional[str] = ""
+    ):
+        self.llm = llm
+        self.name = agent_name
+        self.system_prompt = system_prompt
+        
+    async def astream_events(
+        self, task: str = None, img: str = None, *args, **kwargs
+    ):
+        """
+        Run the Agent with LangChain's astream_events API.
+        Only works with LangChain-based models.
+        """
+        try:
+            async for evt in self.llm.astream_events(task, version="v1"):
+                yield evt
+        except Exception as e:
+            print(f"Error streaming events: {e}")
+
 router = APIRouter()
 
 async def generator(sessionId: str, prompt: str, agentsConfig: dict):
@@ -52,7 +79,9 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict):
     print('--- generator ---')
 
     # llm = Anthropic(anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"), streaming=True)
-    llm = OpenAIChatLLM(model='gpt-4o-mini', api_key=os.getenv("OPENAI_API_KEY"))
+    # llm = OpenAIChatLLM(model='gpt-4o-mini', api_key=os.getenv("OPENAI_API_KEY"))
+
+    llm = ChatOpenAI(model='gpt-4o-mini', api_key=os.getenv("OPENAI_API_KEY"))
 
     # model: str = "claude-3-5-sonnet-20240620"
     # llm = ChatAnthropic(model_name=model, temperature=0.1, max_tokens=1024)
