@@ -8,7 +8,7 @@ import random
 import sys
 import time
 import uuid
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import toml
 import yaml
@@ -45,17 +45,32 @@ class UsageInfo(BaseModel):
     tokens_per_second: Optional[float] = Field(default_factory=lambda: 0.0)
 
 # ^^^ ^^^ REPLACING ^^^ ^^^
-
-# from swarms_cloud.schema.cog_vlm_schemas import (
-#     ChatCompletionResponseChoice,
-#     ChatMessageResponse,
-#     UsageInfo,
-# )
+# from src.core.local_swarms.swarms.models.cog_vlm import ChatCompletionResponseChoice, ChatMessageResponse, UsageInfo
 
 from termcolor import colored
 
-# from src.core.local_swarms.swarms.models.cog_vlm import ChatCompletionResponseChoice, ChatMessageResponse, UsageInfo
-from src.core.schemas.SwarmsCloudSchemas import AgentChatCompletionResponse
+# vvv REPLACING vvv
+
+class ChatCompletionResponseStreamChoice(BaseModel):
+    index: int
+    delta: DeltaMessage
+
+class AgentChatCompletionResponse(BaseModel):
+    id: str = f"agent-{uuid.uuid4().hex}"
+    agent_name: str = Field(
+        ...,
+        description="The name of the agent that generated the completion response.",
+    )
+    object: Literal["chat.completion", "chat.completion.chunk"]
+    choices: List[
+        Union[ChatCompletionResponseChoice, ChatCompletionResponseStreamChoice]
+    ]
+    created: Optional[int] = Field(default_factory=lambda: int(time.time()))
+    usage: Optional[UsageInfo] = None
+
+# ^^^ ^^^ REPLACING ^^^ ^^^
+# from src.core.schemas.SwarmsCloudSchemas import AgentChatCompletionResponse
+
 from src.core.local_swarms.swarms.memory.base_vectordb import BaseVectorDatabase
 from src.core.local_swarms.swarms.models.tiktoken_wrapper import TikTokenizer
 from src.core.local_swarms.swarms.prompts.agent_system_prompts import AGENT_SYSTEM_PROMPT_3
