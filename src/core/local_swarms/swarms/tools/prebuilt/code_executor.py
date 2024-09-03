@@ -1,7 +1,7 @@
 import os
 import subprocess
 from loguru import logger
-from swarms.models.tiktoken_wrapper import TikTokenizer
+from src.core.local_swarms.swarms.models.tiktoken_wrapper import TikTokenizer
 
 
 class CodeExecutor:
