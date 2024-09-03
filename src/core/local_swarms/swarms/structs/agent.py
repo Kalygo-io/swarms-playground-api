@@ -13,18 +13,41 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import toml
 import yaml
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 # from swarms_cloud.schema.agent_api_schemas import (
 #     AgentChatCompletionResponse,
 # )
+
+# vvv REPLACING vvv
+
+class ChatCompletionResponseChoice(BaseModel):
+    index: int
+    message: ChatMessageResponse
+
+class ChatMessageResponse(BaseModel):
+    role: str = Field(
+        ...,
+        description="The role of the message sender. Could be 'user', 'assistant', or 'system'.",
+    )
+    content: str = None
+
+class UsageInfo(BaseModel):
+    prompt_tokens: int = 0
+    total_tokens: int = 0
+    completion_tokens: Optional[int] = 0
+    tokens_per_second: Optional[float] = Field(default_factory=lambda: 0.0)
+
+# ^^^ ^^^ REPLACING ^^^ ^^^
+
 # from swarms_cloud.schema.cog_vlm_schemas import (
 #     ChatCompletionResponseChoice,
 #     ChatMessageResponse,
 #     UsageInfo,
 # )
+
 from termcolor import colored
 
-from src.core.local_swarms.swarms.models.cog_vlm import ChatCompletionResponseChoice, ChatMessageResponse, UsageInfo
+# from src.core.local_swarms.swarms.models.cog_vlm import ChatCompletionResponseChoice, ChatMessageResponse, UsageInfo
 from src.core.schemas.SwarmsCloudSchemas import AgentChatCompletionResponse
 from src.core.local_swarms.swarms.memory.base_vectordb import BaseVectorDatabase
 from src.core.local_swarms.swarms.models.tiktoken_wrapper import TikTokenizer

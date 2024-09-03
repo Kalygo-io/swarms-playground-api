@@ -4,7 +4,7 @@ import time
 from io import BytesIO
 from typing import List, Literal, Optional, Tuple, Union
 
-import torch
+# import torch
 from PIL import Image
 from pydantic import BaseModel, Field
 from transformers import (
@@ -18,7 +18,7 @@ from swarms.utils.logger import logger
 
 MODEL_PATH = "THUDM/cogvlm-chat-hf"
 TOKENIZER_PATH = "lmsys/vicuna-7b-v1.5"
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cpu"
 QUANT_ENABLED = False
 
 
@@ -204,25 +204,26 @@ class CogVLMMultiModal(BaseMultiModalModel):
         if os.environ.get("QUANT_ENABLED"):
             pass
         else:
-            with torch.cuda.device(device):
-                __, total_bytes = torch.cuda.mem_get_info()
-                total_gb = total_bytes / (1 << 30)
-                if total_gb < 40:
-                    pass
+            pass
+            # with torch.cuda.device(device):
+            #     __, total_bytes = torch.cuda.mem_get_info()
+            #     total_gb = total_bytes / (1 << 30)
+            #     if total_gb < 40:
+            #         pass
 
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
         self.tokenizer = LlamaTokenizer.from_pretrained(
             tokenizer, trust_remote_code=True
         )
 
-        if (
-            torch.cuda.is_available()
-            and torch.cuda.get_device_capability()[0] >= 8
-        ):
-            torch_type = torch.bfloat16
-        else:
-            torch_type = torch.float16
+        # if (
+        #     torch.cuda.is_available()
+        #     and torch.cuda.get_device_capability()[0] >= 8
+        # ):
+        #     torch_type = torch.bfloat16
+        # else:
+        #     torch_type = torch.float16
 
         print(
             f"========Use torch type as:{torch_type} with"
