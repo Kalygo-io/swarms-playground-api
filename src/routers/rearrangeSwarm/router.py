@@ -20,13 +20,7 @@ from src.deps import jwt_dependency
 
 # vvv SWARM imports vvv
 from src.core.local_swarms.swarms.structs import Agent
-from src.core.local_swarms.swarms.models import Anthropic
-from src.core.local_swarms.swarms.models import OpenAI
-from src.core.local_swarms.swarms.structs.rearrange import AgentRearrange
 
-from src.core.local_swarms.swarms.utils.loguru_logger import logger
-
-from src.core.local_swarms.swarms.models import Anthropic
 # ^^^ SWARM imports ^^^
 
 limiter = Limiter(key_func=get_remote_address)
