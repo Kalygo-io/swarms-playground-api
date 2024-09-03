@@ -5,7 +5,7 @@ from langchain_postgres import PostgresChatMessageHistory
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from core.schemas.RearrangeSwarmPrompt import RearrangeSwarmPrompt
+from src.core.schemas.RearrangeSwarmPrompt import RearrangeSwarmPrompt
 
 import json
 import os
