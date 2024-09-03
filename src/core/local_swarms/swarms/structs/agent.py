@@ -24,8 +24,8 @@ from pydantic import BaseModel
 # )
 from termcolor import colored
 
-from core.local_swarms.swarms.models.cog_vlm import ChatCompletionResponseChoice, ChatMessageResponse, UsageInfo
-from core.schemas.SwarmsCloudSchemas import AgentChatCompletionResponse
+from src.core.local_swarms.swarms.models.cog_vlm import ChatCompletionResponseChoice, ChatMessageResponse, UsageInfo
+from src.core.schemas.SwarmsCloudSchemas import AgentChatCompletionResponse
 from src.core.local_swarms.swarms.memory.base_vectordb import BaseVectorDatabase
 from src.core.local_swarms.swarms.models.tiktoken_wrapper import TikTokenizer
 from src.core.local_swarms.swarms.prompts.agent_system_prompts import AGENT_SYSTEM_PROMPT_3
