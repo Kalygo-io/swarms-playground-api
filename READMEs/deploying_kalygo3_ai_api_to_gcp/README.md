@@ -39,8 +39,9 @@ Documenting process of deploying Kalygo 3.0 A.I. API to GCP
   <!-- -->
   - ie: `echo -n "cookie domain" | gcloud secrets create COOKIE_DOMAIN --data-file=-`
   <!-- -->
-
   - ie: `echo -n "pinecone api key" | gcloud secrets create PINECONE_API_KEY --data-file=-`
+  <!-- -->
+  - ie: `echo -n "swarms_workspace" | gcloud secrets create WORKSPACE_DIR --data-file=-`
 
   <!-- v NOT NEEDED? v --->
   - ie: `echo -n "embedding api url" | gcloud secrets create EMBEDDING_API_URL --data-file=-`
@@ -92,6 +93,10 @@ Documenting process of deploying Kalygo 3.0 A.I. API to GCP
   --role="roles/secretmanager.secretAccessor"
 
 - gcloud secrets add-iam-policy-binding PINECONE_API_KEY \
+  --member="serviceAccount:137963986378-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+
+- gcloud secrets add-iam-policy-binding WORKSPACE_DIR \
   --member="serviceAccount:137963986378-compute@developer.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 

@@ -56,6 +56,12 @@ spec:
                   name: PINECONE_API_KEY
                   key: latest      
 
+            - name: WORKSPACE_DIR
+              valueFrom:
+                secretKeyRef:
+                  name: WORKSPACE_DIR
+                  key: latest      
+
             # - name: SERPER_API_KEY
             #   valueFrom:
             #     secretKeyRef:
