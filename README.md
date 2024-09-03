@@ -1,6 +1,6 @@
 # TLDR
 
-FastAPI for "Fullstack Vectors" course
+Kalygo 3.0 A.I. API (powered by FastAPI)
 
 ## How to run the FastAPI
 
