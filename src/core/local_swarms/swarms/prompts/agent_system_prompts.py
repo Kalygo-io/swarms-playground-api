@@ -1,4 +1,4 @@
-from swarms.prompts.tools import (
+from src.core.local_swarms.swarms.prompts.tools import (
     DYNAMIC_STOP_PROMPT,
     DYNAMICAL_TOOL_USAGE,
 )
