@@ -15,18 +15,18 @@ from fastapi.responses import StreamingResponse
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.callbacks import LangChainTracer
 import psycopg
-from core.swarms.swarms.models.popular_llms import OpenAIChatLLM
+from src.core.local_swarms.swarms.models.popular_llms import OpenAIChatLLM
 from src.deps import jwt_dependency
 
 # vvv SWARM imports vvv
-from src.core.swarms.swarms.structs import Agent
-from src.core.swarms.swarms.models import Anthropic
-from src.core.swarms.swarms.models import OpenAI
-from src.core.swarms.swarms.structs.rearrange import AgentRearrange
+from src.core.local_swarms.swarms.structs import Agent
+from src.core.local_swarms.swarms.models import Anthropic
+from src.core.local_swarms.swarms.models import OpenAI
+from src.core.local_swarms.swarms.structs.rearrange import AgentRearrange
 
-from src.core.swarms.swarms.utils.loguru_logger import logger
+from src.core.local_swarms.swarms.utils.loguru_logger import logger
 
-from swarms.models import Anthropic
+from src.core.local_swarms.swarms.models import Anthropic
 # ^^^ SWARM imports ^^^
 
 limiter = Limiter(key_func=get_remote_address)
