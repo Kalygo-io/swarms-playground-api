@@ -51,6 +51,10 @@ from termcolor import colored
 
 # vvv REPLACING vvv
 
+class DeltaMessage(BaseModel):
+    role: Optional[Literal["user", "assistant", "system"]] = None
+    content: Optional[str] = None
+
 class ChatCompletionResponseStreamChoice(BaseModel):
     index: int
     delta: DeltaMessage
