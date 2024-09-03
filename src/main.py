@@ -27,6 +27,7 @@ origins = [
     "http://localhost:3000",
     "https://localhost:3000",
     "https://wishbliss.link",
+    "https://demo.swarms.world",
     "https://fullstack-rag-nextjs-service-esw7hvt5nq-ue.a.run.app",
 ]
 
