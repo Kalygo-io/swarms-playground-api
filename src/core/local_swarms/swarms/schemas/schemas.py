@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from core.schemas.SwarmsCloudSchemas import AgentChatCompletionResponse
+from src.core.schemas.SwarmsCloudSchemas import AgentChatCompletionResponse
 # from swarms_cloud.schema.agent_api_schemas import (
 #     AgentChatCompletionResponse,
 # )
