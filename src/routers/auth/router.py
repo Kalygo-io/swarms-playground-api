@@ -27,6 +27,10 @@ ALGORITHM = os.getenv("AUTH_ALGORITHM")
 class AccountCreateRequest(BaseModel):
     email: str
     password: str
+
+class LoginRequestBody(BaseModel):
+    email: str
+    password: str
     
 class Token(BaseModel):
     access_token: str
@@ -105,31 +109,29 @@ async def record_login(account_id: int, account_email: str, ip_address: str, db)
         namespace='logins'
     )
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(db: db_dependency, create_account_request: AccountCreateRequest, request: Request):
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail=str(e))
-    # try:
-    #     hashed_password = bcrypt_context.hash(create_account_request.password)
-    #     create_account_model = Account(
-    #         email=create_account_request.email,
-    #         hashed_password=hashed_password
-    #     )
-    #     db.add(create_account_model)
-    #     db.commit()
-    #     db.refresh(create_account_model)
-    # except Exception as e:
-    #     print('create_user error', e)
-    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+@router.post("/create-account", status_code=status.HTTP_201_CREATED)
+async def create_account(db: db_dependency, create_account_request: AccountCreateRequest, request: Request):
+    # raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail=str(e))
+    try:
+        hashed_password = bcrypt_context.hash(create_account_request.password)
+        create_account_model = Account(
+            email=create_account_request.email,
+            hashed_password=hashed_password
+        )
+        db.add(create_account_model)
+        db.commit()
+        db.refresh(create_account_model)
+    except Exception as e:
+        print('create_user error', e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     
 
-@router.post('/login')
+@router.post('/log-in')
 @limiter.limit("5/minute")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                                 db: db_dependency,
-                                 request: Request,
-                                 background_tasks: BackgroundTasks):
-    print('/login')
-    account = authenticate(form_data.username, form_data.password, db)
+# async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+async def login_for_access_token(body: LoginRequestBody, db: db_dependency, request: Request, background_tasks: BackgroundTasks):
+    print('/log-in')
+    account = authenticate(body.email, body.password, db)
     if not account:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
     
@@ -169,19 +171,24 @@ async def validate_token(request: Request, authorization: str = Header(...)):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
     
-@router.post("/logout")
+@router.delete("/log-out")
 @limiter.limit("5/minute")
 def logout(request: Request, response: Response):
-    response.set_cookie(
+    response.delete_cookie(
         key="jwt",
-        value="",
-        httponly=True,
-        secure=True,
-        samesite="None",
-        path="/",
         domain=os.getenv("COOKIE_DOMAIN"),
-        max_age=0  # Setting max_age to 0 effectively deletes the cookie
+        path="/"
     )
+    # response.set_cookie(
+    #     key="jwt",
+    #     value="",
+    #     httponly=True,
+    #     secure=True,
+    #     samesite="None",
+    #     path="/",
+    #     domain=os.getenv("COOKIE_DOMAIN"),
+    #     max_age=0  # Setting max_age to 0 effectively deletes the cookie
+    # )
     return {"message": "Logged out successfully"}
 
 @router.get("/check-cookies")

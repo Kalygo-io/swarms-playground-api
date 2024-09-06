@@ -179,7 +179,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
                     # Below is the link to the `astream_events` spec as outlined in the LangChain v0.2 docs
                     # https://python.langchain.com/v0.2/docs/versions/v0_2/migrating_astream_events/
                     async for evt in agent.astream_events(
-                        current_task, version="v1"
+                        f"SYSTEM: {agent.system_prompt}\nINPUT: {current_task}\nAI: ", version="v1"
                     ):
                         # print(evt) # <- useful when building/debugging
                         

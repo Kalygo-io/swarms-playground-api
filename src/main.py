@@ -19,7 +19,7 @@ load_dotenv()
 # debugpy.listen(("0.0.0.0", 5678))
 # debugpy.wait_for_client()
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None)
 
 Base.metadata.create_all(bind=engine)
 
@@ -51,7 +51,7 @@ app.include_router(healthcheck.router, prefix="")
 
 app.include_router(
     noRagAgent.router,
-    prefix="/no-rag-agent",
+    prefix="/api/no-rag-agent",
 )
 # app.include_router(
 #     ragAgent.router,
@@ -62,37 +62,37 @@ app.include_router(
 #     prefix="/react-agent",
 # )
 
-# app.include_router(
-#     auth.router,
-#     prefix='/auth',
-#     tags=['auth'],
-# )
+app.include_router(
+    auth.router,
+    prefix='/api/auth',
+    tags=['auth'],
+)
 
 app.include_router(
     recommendations.router,
-    prefix="/recommendations",
+    prefix="/api/recommendations",
     tags=['recommendations'],
 )
 app.include_router(
     logins.router,
-    prefix="/logins",
+    prefix="/api/logins",
     tags=['logins'],
 )
 
 app.include_router(
     multimodal.router,
-    prefix="/multi-modal",
+    prefix="/api/multi-modal",
     tags=['multimodal'],
 )
 
 app.include_router(
     rearrangeSwarm.router,
-    prefix="/rearrange-swarm",
+    prefix="/api/rearrange-swarm",
     tags=['Sequential Swarm'],
 )
 
 app.include_router(
     spreadsheetSwarm.router,
-    prefix="/spreadsheet-swarm",
+    prefix="/api/spreadsheet-swarm",
     tags=['Spreadsheet Swarm'],
 )
