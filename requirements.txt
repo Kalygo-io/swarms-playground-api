@@ -51,7 +51,7 @@ alembic>=1.13.2,<2.0
 replicate>=0.31.0,<1.0
 slowapi>=0.1.9,<0.2.0
 uuid>=1.30.0,<2.0
-sendgrid>=6.11.0,7.0
+sendgrid>=6.11.0,<7.0
 
 toml>=0.10.2,<1.0
 sentry-sdk>=2.13.0,<3.0
