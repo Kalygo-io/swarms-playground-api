@@ -1,16 +1,14 @@
 from datetime import timedelta, datetime, timezone
-from typing import Annotated
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, status, Header, Response, BackgroundTasks, Request
 from pydantic import BaseModel
-from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from dotenv import load_dotenv
 import os
-import hashlib
-from db.models import Account, Logins
-from services import fetch_embedding
+from db.models import Account
+from routers.auth.background_tasks import record_login
+from routers.auth.background_tasks.send_email_ses import send_email_ses
 from src.deps import db_dependency, bcrypt_context
-from pinecone import Pinecone
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -24,30 +22,34 @@ router = APIRouter()
 SECRET_KEY = os.getenv("AUTH_SECRET_KEY")
 ALGORITHM = os.getenv("AUTH_ALGORITHM")
 
-class AccountCreateRequest(BaseModel):
+class AccountCreateRequestBody(BaseModel):
     email: str
     password: str
 
 class LoginRequestBody(BaseModel):
     email: str
     password: str
+
+class RequestPasswordResetBody(BaseModel):
+    email: str
+
+class PasswordResetBody(BaseModel):
+    accountId: int
+    resetToken: str
+    newPassword: str
+
+
     
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 def authenticate(email: str, password: str, db):
-    print('authenticate()')
     account = db.query(Account).filter(Account.email == email).first()
     if not account:
-        print('if not account')
         return False
-    print()
-    print('password', password)
-    print('account.hashed_password', account.hashed_password)
-    print()
+    
     if not bcrypt_context.verify(password, account.hashed_password):
-        print('if not bcrypt_context.verify')
         return False
     return account
 
@@ -57,61 +59,8 @@ def create_access_token(username: str, user_id: int, expires_delta: timedelta):
     encode.update({'exp': expires})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# BACKGROUND JOB FOR RECORDING LOGIN
-async def record_login(account_id: int, account_email: str, ip_address: str, db):
-    print(f"Recording login for account {account_email}... ")
-
-    created_at = datetime.now()
-    log = f"{ip_address} {created_at}"
-    # log = f"192.168.100.200 2023-03-01T05:22:45.123456-05:00"
-    
-    embedding = await fetch_embedding(log) # fetch embedding from EMBEDDING_API_URL
-
-    print('embedding', len(embedding))
-
-    pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-    index = pc.Index(os.getenv("PINECONE_ALL_MINILM_L6_V2_INDEX"))
-
-    # Compare the log with the existing logs
-
-    results = index.query(
-        vector=embedding,
-        top_k=1,
-        include_values=False,
-        include_metadata=True,
-        namespace='logins',
-        filter={
-          "email": {"$eq": account_email}
-        },
-    )
-
-    similarity_score = 1.0
-
-    if len(results['matches']) > 0:
-        print("login similarity score", results['matches'][0]['score'])
-        print("log", log)
-
-        similarity_score = results['matches'][0]['score']
-
-    db.add(Logins(account_id=account_id, ip_address=ip_address,similarity_score=similarity_score))
-    db.commit()
-
-    # Insert the log into the Pinecone index
-    
-    index.upsert(
-        vectors=[
-            {
-                "id": hashlib.sha1(log.encode('utf-8')).hexdigest(),
-                "values": embedding,
-                "metadata": {"email": account_email, "ip_address": ip_address, "created_at": created_at}
-            },
-        ],
-        namespace='logins'
-    )
-
 @router.post("/create-account", status_code=status.HTTP_201_CREATED)
-async def create_account(db: db_dependency, create_account_request: AccountCreateRequest, request: Request):
-    # raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail=str(e))
+async def create_account(db: db_dependency, create_account_request: AccountCreateRequestBody, request: Request):
     try:
         hashed_password = bcrypt_context.hash(create_account_request.password)
         create_account_model = Account(
@@ -128,15 +77,12 @@ async def create_account(db: db_dependency, create_account_request: AccountCreat
 
 @router.post('/log-in')
 @limiter.limit("5/minute")
-# async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 async def login_for_access_token(body: LoginRequestBody, db: db_dependency, request: Request, background_tasks: BackgroundTasks):
-    print('/log-in')
     account = authenticate(body.email, body.password, db)
     if not account:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
     
     print('Record the login in the background')
-    # Record the login in the background
     ip_address = request.client.host
     background_tasks.add_task(record_login, account.id, account.email, ip_address, db)
 
@@ -179,17 +125,36 @@ def logout(request: Request, response: Response):
         domain=os.getenv("COOKIE_DOMAIN"),
         path="/"
     )
-    # response.set_cookie(
-    #     key="jwt",
-    #     value="",
-    #     httponly=True,
-    #     secure=True,
-    #     samesite="None",
-    #     path="/",
-    #     domain=os.getenv("COOKIE_DOMAIN"),
-    #     max_age=0  # Setting max_age to 0 effectively deletes the cookie
-    # )
     return {"message": "Logged out successfully"}
+
+@router.post("/request-password-reset")
+def request_reset_password(background_tasks: BackgroundTasks, request_body: RequestPasswordResetBody, db: db_dependency):
+    try:
+        account = db.query(Account).filter(Account.email == request_body.email).first()
+        if not account:
+            raise "Account not found"
+
+        reset_token: str = str(uuid.uuid4())
+
+        # background_tasks.add_task(send_password_reset_email, account.email, reset_token)
+        send_email_ses(account.id, reset_token)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@router.post("/reset-password")
+def reset_password(background_tasks: BackgroundTasks, request_body: PasswordResetBody, db: db_dependency):
+    try:
+
+        
+        account = db.query(Account).filter(Account.id == request_body.accountId).first()
+        if not account:
+            raise "Account not found"
+
+        reset_token: str = str(uuid.uuid4())
+        # background_tasks.add_task(send_password_reset_email, account.email, reset_token)
+        send_email_ses(account.id, reset_token)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @router.get("/check-cookies")
 def check_cookies(request: Request):
