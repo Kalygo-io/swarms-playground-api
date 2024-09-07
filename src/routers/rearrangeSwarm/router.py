@@ -290,8 +290,6 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
 
 @router.post("/completion")
 @limiter.limit("10/minute")
-def prompt(prompt: RearrangeSwarmPrompt, request: Request):
-    # def prompt(prompt: RearrangeSwarmPrompt, jwt: jwt_dependency, request: Request):
-    print('/rearrange-swarm/completion')
+def prompt(prompt: RearrangeSwarmPrompt, jwt: jwt_dependency, request: Request):
     print(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow)
     return StreamingResponse(generator(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow), media_type='text/event-stream')

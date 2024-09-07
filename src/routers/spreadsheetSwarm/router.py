@@ -187,8 +187,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict):
 
 @router.post("/completion")
 @limiter.limit("10/minute")
-def prompt(prompt: SpreadsheetSwarmPrompt, request: Request):
-    #    async def prompt(prompt: SpreadsheetSwarmPrompt, request: Request):
+def prompt(prompt: SpreadsheetSwarmPrompt, jwt: jwt_dependency, request: Request):
     print('/spreadsheet-swarm/completion')
     print(prompt.sessionId, prompt.content, prompt.agentsConfig)
     return StreamingResponse(generator(prompt.sessionId, prompt.content, prompt.agentsConfig), media_type='text/event-stream')
