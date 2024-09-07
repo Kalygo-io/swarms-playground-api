@@ -38,8 +38,6 @@ class PasswordResetBody(BaseModel):
     resetToken: str
     newPassword: str
 
-
-    
 class Token(BaseModel):
     access_token: str
     token_type: str
