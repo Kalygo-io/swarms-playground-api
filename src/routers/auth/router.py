@@ -154,10 +154,12 @@ def reset_password(background_tasks: BackgroundTasks, request_body: PasswordRese
 
         hashed_password = bcrypt_context.hash(request_body.newPassword)
         account.hashed_password = hashed_password
+        account.reset_token = None
 
-        reset_token: str = str(uuid.uuid4())
+        db.commit()
+
         # background_tasks.add_task(send_password_reset_email, account.email, reset_token)
-        send_password_has_been_reset_email_ses(account.email, reset_token)
+        send_password_has_been_reset_email_ses(account.email)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

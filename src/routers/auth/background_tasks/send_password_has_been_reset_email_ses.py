@@ -1,7 +1,7 @@
 import os
 import boto3
 
-def send_password_has_been_reset_email_ses(to_email: str, reset_token: str):
+def send_password_has_been_reset_email_ses(to_email: str):
   try:
     client = boto3.client(
       'ses',
