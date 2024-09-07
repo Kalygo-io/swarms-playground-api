@@ -1,7 +1,7 @@
 import os
 import boto3
 
-def send_email_ses(account_id: int, reset_token: str):
+def send_reset_password_link_email_ses(account_id: int, to_email: str, reset_token: str):
   try:
     client = boto3.client(
       'ses',
@@ -17,7 +17,7 @@ def send_email_ses(account_id: int, reset_token: str):
     response = client.send_email(
       Source='noreply@kalygo.io',
       Destination={
-        'ToAddresses': ['tad@cmdlabs.io']
+        'ToAddresses': [to_email]
       },
       Message={
         'Subject': {

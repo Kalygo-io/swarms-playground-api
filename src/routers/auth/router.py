@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 import os
 from db.models import Account
 from routers.auth.background_tasks import record_login
-from routers.auth.background_tasks.send_email_ses import send_email_ses
+from routers.auth.background_tasks.send_reset_password_link_email_ses import send_reset_password_link_email_ses
+from routers.auth.background_tasks.send_password_has_been_reset_email_ses import send_password_has_been_reset_email_ses
 from src.deps import db_dependency, bcrypt_context
 
 from slowapi import Limiter
@@ -133,24 +134,30 @@ def request_reset_password(background_tasks: BackgroundTasks, request_body: Requ
             raise "Account not found"
 
         reset_token: str = str(uuid.uuid4())
-
-        # background_tasks.add_task(send_password_reset_email, account.email, reset_token)
-        send_email_ses(account.id, reset_token)
+        account.reset_token = reset_token
+        db.commit()
+        
+        send_reset_password_link_email_ses(account.id, account.email, reset_token)
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @router.post("/reset-password")
 def reset_password(background_tasks: BackgroundTasks, request_body: PasswordResetBody, db: db_dependency):
     try:
-
-        
-        account = db.query(Account).filter(Account.id == request_body.accountId).first()
+        account = db.query(Account).filter(
+            Account.id == request_body.accountId,
+            Account.reset_token == request_body.resetToken
+        ).first()
         if not account:
             raise "Account not found"
 
+        hashed_password = bcrypt_context.hash(request_body.newPassword)
+        account.hashed_password = hashed_password
+
         reset_token: str = str(uuid.uuid4())
         # background_tasks.add_task(send_password_reset_email, account.email, reset_token)
-        send_email_ses(account.id, reset_token)
+        send_password_has_been_reset_email_ses(account.email, reset_token)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
