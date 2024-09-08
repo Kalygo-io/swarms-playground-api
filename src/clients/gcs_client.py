@@ -13,7 +13,7 @@ class GCSClient:
       credentials, project = google.auth.default()
 
       print()
-      print("Using default credentials")
+      print("get_storage_client() - Using default credentials")
       print()
 
       print(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
@@ -21,7 +21,7 @@ class GCSClient:
       print('project', project)
       print()
       
-      return storage.Client(credentials=credentials, project=project) 
+      return storage.Client() 
     else:
       """Return a Google Cloud Storage client using a specific service account."""
       credentials = service_account.Credentials.from_service_account_file(
