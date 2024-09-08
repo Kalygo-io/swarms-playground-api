@@ -27,3 +27,7 @@ Info regarding how the FastAPI was integrated with GCS (Google Cloud Storage)
 - gcloud projects add-iam-policy-binding 137963986378 \
   --member="serviceAccount:kalygo3-gcs-sa@kalygo-v3.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
+
+## WTF
+
+--service-account kalygo3-gcs-sa@kalygo-v3.iam.gserviceaccount.com
