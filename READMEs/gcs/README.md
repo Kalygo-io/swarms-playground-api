@@ -31,3 +31,7 @@ Info regarding how the FastAPI was integrated with GCS (Google Cloud Storage)
 ## WTF
 
 --service-account kalygo3-gcs-sa@kalygo-v3.iam.gserviceaccount.com
+
+##
+
+Added `Storage Admin` to GCP service account

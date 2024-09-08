@@ -10,6 +10,9 @@ class GCSClient:
   def get_storage_client():
 
     if (os.getenv("ENVIRONMENT") == "production"):
+      print("ENVIRONMENT")
+      print(os.getenv("ENVIRONMENT"))
+
       credentials, project = google.auth.default()
 
       print()
