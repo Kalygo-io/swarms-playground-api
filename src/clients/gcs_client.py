@@ -10,16 +10,16 @@ class GCSClient:
   def get_storage_client():
 
     if (os.getenv("ENVIRONMENT") == "production"):
-      credentials, project = google.auth.default()
+      # credentials, project = google.auth.default()
 
       print()
       print("get_storage_client() - Using default credentials")
       print()
 
       print(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
-      print('credentials', credentials)
-      print('project', project)
-      print()
+      # print('credentials', credentials)
+      # print('project', project)
+      # print()
       
       return storage.Client() 
     else:
