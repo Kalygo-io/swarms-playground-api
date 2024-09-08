@@ -77,3 +77,19 @@ gcloud projects add-iam-policy-binding 137963986378 \
 gcloud projects add-iam-policy-binding 137963986378 \
     --member="serviceAccount:kalygo3-gcs-sa@kalygo-v3.iam.gserviceaccount.com" \
     --role="roles/storage.objectViewer"
+
+## 
+
+Adding S.A. as secret and loading in with google.auth.load_credentials_from_dict()
+
+## NEW DEMARKATION
+
+- gcloud secrets create GCS_SA --data-file="gcs-sa.json"
+
+- gcloud secrets add-iam-policy-binding GCS_SA \
+    --member="serviceAccount:137963986378-compute@developer.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor"
+
+- Add reference to GCS_SA secret in service.yaml
+  - gcloud run services replace service.yaml --region us-east1
+

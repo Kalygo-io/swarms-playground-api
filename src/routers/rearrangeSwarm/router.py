@@ -17,7 +17,6 @@ from fastapi.responses import StreamingResponse
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.callbacks import LangChainTracer
 import psycopg
-# from src.core.local_swarms.swarms.models.popular_llms import OpenAIChatLLM
 from src.deps import jwt_dependency
 
 # vvv SWARM imports vvv

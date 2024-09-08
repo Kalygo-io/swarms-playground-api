@@ -88,6 +88,12 @@ spec:
                   name: ENVIRONMENT
                   key: latest
 
+            - name: GCS_SA
+              valueFrom:
+                secretKeyRef:
+                  name: GCS_SA
+                  key: latest
+
             # - name: SERPER_API_KEY
             #   valueFrom:
             #     secretKeyRef:

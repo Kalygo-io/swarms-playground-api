@@ -25,6 +25,8 @@
 
 - ie: `echo -n "production" | gcloud secrets create ENVIRONMENT --data-file=-`
 
+- ie: `echo -n "S.A. as a string" | gcloud secrets GCS_SA --data-file=-`
+
 - CHECK OUT: `https://console.cloud.google.com/security/secret-manager?project=fullstack-rag`
 
 ## Granting Cloud Run the permissions to access secrets
