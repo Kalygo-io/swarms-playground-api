@@ -3,6 +3,7 @@ import google.auth
 from google.oauth2 import service_account
 from datetime import datetime, timedelta
 import os
+from core.helpers.get_principal import get_principal
 from src.clients.gcs_client import GCSClient
 
 def generate_signed_url(bucket_name, file_name, expiration=3600):
@@ -19,6 +20,9 @@ def generate_signed_url(bucket_name, file_name, expiration=3600):
     print("4")
     expiration_time = datetime.now() + timedelta(seconds=expiration)
     print("5")
+
+    print('get_principal()')
+    print(get_principal())
 
     print('blob')
     print(blob)
