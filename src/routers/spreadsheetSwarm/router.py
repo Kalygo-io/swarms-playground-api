@@ -18,8 +18,10 @@ from fastapi.responses import StreamingResponse
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.callbacks import LangChainTracer
 import psycopg
-# from src.core.local_swarms.swarms.models.popular_llms import OpenAIChatLLM
+
 from src.deps import jwt_dependency
+from src.clients.gcs_client import GCSClient
+from src.core.helpers.generate_signed_url import generate_signed_url
 
 # vvv SWARM imports vvv
 # from src.core.local_swarms.swarms.structs import Agent
@@ -35,6 +37,8 @@ limiter = Limiter(key_func=get_remote_address)
 
 from dotenv import load_dotenv
 import uuid
+import csv
+from google.cloud import storage
 
 load_dotenv()
 
@@ -120,6 +124,8 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict):
     print(prompt)
     loop_count = 0
 
+    for_csv = "agent,output\n"
+
     while loop_count < 1:
         results = []
         for agent in agents:
@@ -157,33 +163,50 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict):
                     }, separators=(',', ':'))
 
                 elif evt["event"] == "on_chat_model_end":
-                    result = evt["data"]["output"].content
-                    # print(agent.name, "result", result)
+                    final_output = evt["data"]["output"].content
+
+                    final_output = final_output.replace('"', '""')
+                    final_output = f'"{final_output}"'
+                    for_csv += agent.name + "," + final_output + "\n"
+
                     yield json.dumps({
                         "event": "on_chat_model_end",
                         "run_id": evt['run_id']
                     }, separators=(',', ':'))
             results.append(result)
 
-            # current_task = ""
-            # for index, res in enumerate(results):
-            #     print("enumerating...")
-                
-            #     print('index', index)
-            #     print('res', res)
-
-            #     print()
-            #     print('--- *** ---')
-            #     print()
-
-            #     current_task += (
-            #         "# OUTPUT of "
-            #         + agents[index].name
-            #         + ""
-            #         + res
-            #         + "\n\n"
-            #     )
         loop_count += 1
+
+    print("")
+    print("...FINALLY...")
+    print("")
+
+    # SAUCE --- SAUCE #
+
+    def upload_csv_to_gcs(csv_data, bucket_name, file_name):
+
+
+        # Use the storage service account to upload the file
+        storage_client = GCSClient.get_storage_client()
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob(file_name)
+        blob.upload_from_string(csv_data, content_type='text/csv')
+
+        print('DONE')
+
+    # Specify the GCS bucket name and file name
+    bucket_name = 'swarms'
+    file_name = str(uuid.uuid4()) + '.csv'
+
+    # Call the function to upload the CSV data to GCS
+    upload_csv_to_gcs(for_csv, bucket_name, file_name)
+
+    signed_url = generate_signed_url(bucket_name, file_name)
+
+    yield json.dumps({
+        "event": "add_download_link_button",
+        "link": signed_url
+    }, separators=(',', ':'))
 
 @router.post("/completion")
 @limiter.limit("10/minute")
