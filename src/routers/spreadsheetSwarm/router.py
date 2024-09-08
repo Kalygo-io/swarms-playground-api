@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+from core.helpers.get_principal import get_principal
 from core.helpers.upload_csv_to_gcs import upload_csv_to_gcs
 from core.schemas.SpreadsheetSwarmPrompt import SpreadsheetSwarmPrompt
 
@@ -183,6 +184,8 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict):
 
     # Call the function to upload the CSV data to GCS
     upload_csv_to_gcs(for_csv, bucket_name, file_name)
+
+    print(get_principal())
 
     signed_url = generate_signed_url(bucket_name, file_name)
 
