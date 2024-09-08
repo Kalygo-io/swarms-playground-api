@@ -43,6 +43,8 @@ Documenting process of deploying Kalygo 3.0 A.I. API to GCP
   <!-- -->
   - ie: `echo -n "swarms_workspace" | gcloud secrets create WORKSPACE_DIR --data-file=-`
 
+  - ie: `echo -n "production" | gcloud secrets create ENVIRONMENT --data-file=-`
+
   <!-- v NOT NEEDED? v --->
   - ie: `echo -n "embedding api url" | gcloud secrets create EMBEDDING_API_URL --data-file=-`
   - ie: `echo -n "REPLICATE_API_TOKEN" | gcloud secrets create REPLICATE_API_TOKEN --data-file=-`

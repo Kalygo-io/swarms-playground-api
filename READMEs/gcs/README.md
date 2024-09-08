@@ -12,3 +12,7 @@ Info regarding how the FastAPI was integrated with GCS (Google Cloud Storage)
   - gcloud projects add-iam-policy-binding 137963986378 \
     --member="serviceAccount:kalygo3-gcs-sa@kalygo-v3.iam.gserviceaccount.com" \
     --role="roles/storage.admin"
+
+## Permissions to CRUD to GCS
+
+- NOTE: a different technique for importing the S.A. creds is needed in local (dev machine) vs production (Cloud Run)

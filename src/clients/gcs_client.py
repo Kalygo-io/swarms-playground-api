@@ -9,7 +9,7 @@ class GCSClient:
   @staticmethod
   def get_storage_client():
 
-    if (os.getenv("ENVIRONMENT") == "prod"):
+    if (os.getenv("ENVIRONMENT") == "production"):
         credentials, project = google.auth.default()
     else:
         """Return a Google Cloud Storage client using a specific service account."""

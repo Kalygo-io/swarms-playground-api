@@ -23,6 +23,8 @@
 - ie: `echo -n "all-minilm-l6-v2-384-dims" | gcloud secrets create PINECONE_ALL_MINILM_L6_V2_INDEX --data-file=-`
 - ie: `echo -n "imagebind-1024-dims" | gcloud secrets create PINECONE_IMAGEBIND_1024_DIMS_INDEX --data-file=-`
 
+- ie: `echo -n "production" | gcloud secrets create ENVIRONMENT --data-file=-`
+
 - CHECK OUT: `https://console.cloud.google.com/security/secret-manager?project=fullstack-rag`
 
 ## Granting Cloud Run the permissions to access secrets
@@ -82,6 +84,10 @@
   --role="roles/secretmanager.secretAccessor"
 
 - gcloud secrets add-iam-policy-binding REPLICATE_API_TOKEN \
+  --member="serviceAccount:370967482684-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+
+- gcloud secrets add-iam-policy-binding ENVIRONMENT \
   --member="serviceAccount:370967482684-compute@developer.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 
