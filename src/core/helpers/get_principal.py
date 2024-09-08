@@ -1,8 +1,23 @@
 import google.auth
+import os
+import json
+from google.oauth2 import service_account
 
 def get_principal():
-    # Get the credentials and project ID from the environment
-    credentials, project_id = google.auth.load_credentials_from_dict()
+    if (os.getenv("ENVIRONMENT") == "production"):
+        GCS_SA = json.loads(os.getenv('GCS_SA'))
 
-    # Print the service account email (principal)
-    print(f"Principal (service account): {credentials.service_account_email}")
+        credentials, project = google.auth.load_credentials_from_dict(GCS_SA)
+      
+        print()
+        print('credentials', credentials)
+        print('project', project)
+        print(f"Principal (service account): {credentials.service_account_email}")
+        print()
+
+    else:
+        GCS_SA_PATH = os.getenv("GCS_SA_PATH")
+        credentials = service_account.Credentials.from_service_account_file(
+            GCS_SA_PATH
+        ) 
+        print(f"Principal (service account): {credentials.service_account_email}")
