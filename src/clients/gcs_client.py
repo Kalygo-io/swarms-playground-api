@@ -2,35 +2,32 @@ from google.cloud import storage
 from google.oauth2 import service_account
 import google.auth
 import os
-
-STORAGE_SERVICE_ACCOUNT_KEY = os.getenv("STORAGE_SERVICE_ACCOUNT_KEY")
+import json
 
 class GCSClient:
   @staticmethod
   def get_storage_client():
 
     if (os.getenv("ENVIRONMENT") == "production"):
+      GCS_SA = json.loads(os.getenv('GCS_SA'))
+
       print("ENVIRONMENT")
       print(os.getenv("ENVIRONMENT"))
 
-      credentials, project = google.auth.default()
-
+      # Load credentials from the dictionary
+      credentials, project = google.auth.load_credentials_from_dict(GCS_SA)
+      
       print()
-      print("get_storage_client() - Using default credentials")
+      print('credentials', credentials)
+      print('project', project)
       print()
-
-      print(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
-      # print('credentials', credentials)
-      # print('project', project)
-      # print()
       
       return storage.Client(credentials=credentials, project=project) 
     else:
-      """Return a Google Cloud Storage client using a specific service account."""
+      GCS_SA_PATH = os.getenv("GCS_SA_PATH")
       credentials = service_account.Credentials.from_service_account_file(
-      STORAGE_SERVICE_ACCOUNT_KEY
+        GCS_SA_PATH
       )
-      project = "kalygo-v3"
-
+      
       return storage.Client(credentials=credentials)
   
