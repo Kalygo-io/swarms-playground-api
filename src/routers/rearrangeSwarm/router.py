@@ -179,7 +179,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
                     # Below is the link to the `astream_events` spec as outlined in the LangChain v0.2 docs
                     # https://python.langchain.com/v0.2/docs/versions/v0_2/migrating_astream_events/
                     async for evt in agent.astream_events(
-                        f"SYSTEM: {agent.system_prompt}\nINPUT: {current_task}\nAI: ", version="v1"
+                        current_task, version="v1"
                     ):
                         # print(evt) # <- useful when building/debugging
                         
@@ -291,5 +291,6 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
 @router.post("/completion")
 @limiter.limit("10/minute")
 def prompt(prompt: RearrangeSwarmPrompt, jwt: jwt_dependency, request: Request):
+    print('/rearrange-swarm/completion')
     print(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow)
     return StreamingResponse(generator(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow), media_type='text/event-stream')
