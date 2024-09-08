@@ -20,7 +20,7 @@ class GCSClient:
       print('credentials', credentials)
       print('project', project)
       print()
-
+      
       return storage.Client()
     else:
       """Return a Google Cloud Storage client using a specific service account."""
