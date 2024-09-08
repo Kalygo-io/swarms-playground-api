@@ -15,6 +15,8 @@ class GCSClient:
       print()
       print("Using default credentials")
       print()
+
+      print(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
       print('credentials', credentials)
       print('project', project)
       print()
