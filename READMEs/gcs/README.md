@@ -59,3 +59,15 @@ gcloud projects get-iam-policy 137963986378 \
 gcloud projects add-iam-policy-binding 137963986378 \
   --member="serviceAccount:137963986378-compute@developer.gserviceaccount.com" \
   --role="roles/storage.objectUser"
+
+##
+
+gcloud projects add-iam-policy-binding 137963986378 \
+    --member="serviceAccount:137963986378-compute@developer.gserviceaccount.com" \
+    --role="roles/iam.serviceAccountTokenCreator"
+
+##
+
+gcloud projects add-iam-policy-binding 137963986378 \
+    --member="serviceAccount:kalygo3-gcs-sa@kalygo-v3.iam.gserviceaccount.com" \
+    --role="roles/iam.serviceAccountTokenCreator"
