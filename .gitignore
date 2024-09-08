@@ -169,3 +169,5 @@ cython_debug/
 # src/core/swarms
 
 *-sa.json
+
+agent_workspace/*

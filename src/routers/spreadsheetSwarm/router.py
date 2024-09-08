@@ -24,16 +24,6 @@ import psycopg
 from src.deps import jwt_dependency
 from src.core.helpers.generate_signed_url import generate_signed_url
 
-# vvv SWARM imports vvv
-# from src.core.local_swarms.swarms.structs import Agent
-# from src.core.local_swarms.swarms.models import Anthropic
-# from src.core.local_swarms.swarms.models import OpenAI
-# from src.core.local_swarms.swarms.structs.rearrange import AgentRearrange
-
-# from src.core.local_swarms.swarms.utils.loguru_logger import logger
-# from src.core.local_swarms.swarms.models import Anthropic
-# ^^^ SWARM imports ^^^
-
 limiter = Limiter(key_func=get_remote_address)
 
 from dotenv import load_dotenv
@@ -182,7 +172,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict):
     bucket_name = 'swarms'
     file_name = str(uuid.uuid4()) + '.csv'
 
-    # Call the function to upload the CSV data to GCS
+    # Upload CSV data to GCS
     upload_csv_to_gcs(for_csv, bucket_name, file_name)
 
     signed_url = generate_signed_url(bucket_name, file_name)
