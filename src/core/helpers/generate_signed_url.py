@@ -19,6 +19,10 @@ def generate_signed_url(bucket_name, file_name, expiration=3600):
     print("4")
     expiration_time = datetime.now() + timedelta(seconds=expiration)
     print("5")
+
+    print('blob')
+    print(blob)
+
     url = blob.generate_signed_url(expiration=expiration_time)
     print("6")
     return url
