@@ -5,8 +5,6 @@ from datetime import datetime, timedelta
 import os
 from src.clients.gcs_client import GCSClient
 
-STORAGE_SERVICE_ACCOUNT_KEY = os.getenv("STORAGE_SERVICE_ACCOUNT_KEY")
-
 def generate_signed_url(bucket_name, file_name, expiration=3600):
     storage_client = GCSClient.get_storage_client()
     bucket = storage_client.get_bucket(bucket_name)
