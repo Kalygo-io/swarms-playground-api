@@ -6,14 +6,16 @@ import os
 
 STORAGE_SERVICE_ACCOUNT_KEY = os.getenv("STORAGE_SERVICE_ACCOUNT_KEY")
 
-
 def generate_signed_url(bucket_name, file_name, expiration=3600):
-    # credentials, project = google.auth.default()
-    """Return a Google Cloud Storage client using a specific service account."""
-    credentials = service_account.Credentials.from_service_account_file(
-      STORAGE_SERVICE_ACCOUNT_KEY
-    )
-    project = "kalygo-v3"
+
+    if (os.getenv("ENVIRONMENT") == "prod"):
+        credentials, project = google.auth.default()
+    else:
+        """Return a Google Cloud Storage client using a specific service account."""
+        credentials = service_account.Credentials.from_service_account_file(
+        STORAGE_SERVICE_ACCOUNT_KEY
+        )
+        project = "kalygo-v3"
 
     storage_client = storage.Client(credentials=credentials, project=project)
     bucket = storage_client.get_bucket(bucket_name)

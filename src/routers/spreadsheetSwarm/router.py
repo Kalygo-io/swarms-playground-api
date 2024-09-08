@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+from core.helpers.upload_csv_to_gcs import upload_csv_to_gcs
 from core.schemas.SpreadsheetSwarmPrompt import SpreadsheetSwarmPrompt
 
 import json
@@ -20,7 +21,6 @@ from langchain.callbacks import LangChainTracer
 import psycopg
 
 from src.deps import jwt_dependency
-from src.clients.gcs_client import GCSClient
 from src.core.helpers.generate_signed_url import generate_signed_url
 
 # vvv SWARM imports vvv
@@ -176,23 +176,6 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict):
             results.append(result)
 
         loop_count += 1
-
-    print("")
-    print("...FINALLY...")
-    print("")
-
-    # SAUCE --- SAUCE #
-
-    def upload_csv_to_gcs(csv_data, bucket_name, file_name):
-
-
-        # Use the storage service account to upload the file
-        storage_client = GCSClient.get_storage_client()
-        bucket = storage_client.get_bucket(bucket_name)
-        blob = bucket.blob(file_name)
-        blob.upload_from_string(csv_data, content_type='text/csv')
-
-        print('DONE')
 
     # Specify the GCS bucket name and file name
     bucket_name = 'swarms'
