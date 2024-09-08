@@ -34,4 +34,28 @@ Info regarding how the FastAPI was integrated with GCS (Google Cloud Storage)
 
 ##
 
-Added `Storage Admin` to GCP service account
+Added `Storage Admin` to default GCP service account
+
+##
+
+roles/storage.objectAdmin
+
+##
+
+gcloud projects get-iam-policy 137963986378 \
+--flatten="bindings[].members" \
+--format='table(bindings.role)' \
+--filter="bindings.members:137963986378-compute@developer.gserviceaccount.com"
+
+##
+
+gcloud projects get-iam-policy 137963986378 \
+--flatten="bindings[].members" \
+--format='table(bindings.role)' \
+--filter="bindings.members:kalygo3-gcs-sa@kalygo-v3.iam.gserviceaccount.com"
+
+##
+
+gcloud projects add-iam-policy-binding 137963986378 \
+  --member="serviceAccount:137963986378-compute@developer.gserviceaccount.com" \
+  --role="roles/storage.objectUser"
