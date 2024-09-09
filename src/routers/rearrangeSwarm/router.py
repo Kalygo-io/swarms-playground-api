@@ -3,6 +3,7 @@ from fastapi import APIRouter, Request
 # from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 from langchain_postgres import PostgresChatMessageHistory
+from core.classes.agent import Agent
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -43,57 +44,9 @@ callbacks = [
 
 router = APIRouter()
 
-
-class Agent():
-    def __init__(
-        self,
-        llm: Optional[Any] = None,
-        agent_name: Optional[str] = "",
-        system_prompt: Optional[str] = ""
-    ):
-        self.llm = llm
-        self.name = agent_name
-        self.system_prompt = system_prompt
-        
-    async def astream_events(
-        self, task: str = None, img: str = None, *args, **kwargs
-    ):
-        """
-        Run the Agent with LangChain's astream_events API.
-        Only works with LangChain-based models.
-        """
-        try:
-            async for evt in self.llm.astream_events(task, version="v1"):
-                yield evt
-        except Exception as e:
-            print(f"Error streaming events: {e}")
-
 async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig: str):
 
-    print('--- generator ---')
-
-    # llm = Anthropic(anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"), streaming=True)
     llm = ChatOpenAI(model='gpt-4o-mini', api_key=os.getenv("OPENAI_API_KEY"))
-
-    # model: str = "claude-3-5-sonnet-20240620"
-    # llm = ChatAnthropic(model_name=model, temperature=0.1, max_tokens=1024)
-    # conn_info = os.getenv("POSTGRES_URL")
-    # sync_connection = psycopg.connect(conn_info)
-    # history = PostgresChatMessageHistory(
-    #     'chat_history', # table name
-    #     sessionId,
-    #     sync_connection=sync_connection
-    # )
-    # promptTemplate = ChatPromptTemplate.from_messages(
-    #     [
-    #         ("system", "You're an assistant. Bold key terms in your responses."),
-    #         MessagesPlaceholder(variable_name="history"),
-    #         ("human", "{input}"),
-    #     ]
-    # )
-    # messages = promptTemplate.format_messages(input=prompt, history=history.messages)
-
-    # vvv SEQUENTIAL SWARM vvv
 
     agents = []
     
@@ -107,43 +60,6 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
         ))
 
     flow = flowConfig
-
-    # ^^^ SEQUENTIAL SWARM ^^^
-
-    # vvv PARALLEL SWARM vvv
-
-    # writer1 = Agent(
-    #   agent_name="J.K. Rowling",
-    #   system_prompt="Write in the style of J.K. Rowling",
-    #   llm=llm,
-    #   dashboard=False,
-    # )
-
-    # writer2 = Agent(
-    #     agent_name="Stephen King",
-    #     system_prompt="Write in the style of Stephen King",
-    #     llm=llm,
-    #     dashboard=False
-    # )
-
-    # writer3 = Agent(
-    #     agent_name="Salman Rushdie",
-    #     system_prompt="Write in the style of Salman Rushdie",
-    #     llm=llm,
-    #     dashboard=False
-    # )
-
-    # reviewer = Agent(
-    #     agent_name="Reviewer",
-    #     system_prompt="Select the writer that wrote the best. There can only be one best.",
-    #     llm=llm,
-    #     dashboard=False
-    # )
-
-    # agents = [writer1, writer2, writer3, reviewer]
-    # flow = f"{writer1.name}, {writer2.name}, {writer3.name} -> {reviewer.name}"
-
-    # ^^^ PARALLEL SWARM ^^^
 
     agents = {agent.name: agent for agent in agents}
     tasks = flow.split("->")
@@ -178,7 +94,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
                     # Below is the link to the `astream_events` spec as outlined in the LangChain v0.2 docs
                     # https://python.langchain.com/v0.2/docs/versions/v0_2/migrating_astream_events/
                     async for evt in agent.astream_events(
-                        current_task, version="v1"
+                        f"SYSTEM: {agent.system_prompt}\nINPUT: {current_task}\nAI: ", version="v1"
                     ):
                         # print(evt) # <- useful when building/debugging
                         

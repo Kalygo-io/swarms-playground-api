@@ -7,7 +7,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from core.classes.agent import Agent
-from src.core.schemas.RearrangeSwarmPrompt import RearrangeSwarmPrompt
+from src.core.schemas.SwarmDesigner.SwarmDesignerPrompt import SwarmDesignerPrompt
 
 import json
 import os
@@ -38,12 +38,14 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
 
     agents = []
     
-    agentsConfigKeys = agentsConfig.keys()
+    print()
+    print('agentsConfig', agentsConfig)
+    print()
 
-    for agentConfigKey in agentsConfigKeys:
+    for a in agentsConfig:
         agents.append(Agent(
-            agent_name=agentsConfig[agentConfigKey]['name'],
-            system_prompt=agentsConfig[agentConfigKey]['system_prompt'],
+            agent_name=a['name'],
+            system_prompt=a['system_prompt'],
             llm=llm,
         ))
 
@@ -82,7 +84,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
                     # Below is the link to the `astream_events` spec as outlined in the LangChain v0.2 docs
                     # https://python.langchain.com/v0.2/docs/versions/v0_2/migrating_astream_events/
                     async for evt in agent.astream_events(
-                        current_task, version="v1"
+                        f"SYSTEM: {agent.system_prompt}\nINPUT: {current_task}\nAI: ", version="v1"
                     ):
                         # print(evt) # <- useful when building/debugging
                         
@@ -119,15 +121,9 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
                 current_task = ""
                 for index, res in enumerate(results):
                     print("enumerating...")
-                    
                     print('index', index)
-                    
                     print('agent_names', agent_names),
                     print('res', res)
-
-                    print()
-                    print('--- *** ---')
-                    print()
 
                     current_task += (
                         "# OUTPUT of "
@@ -164,6 +160,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
                         }, separators=(',', ':'))
 
                     elif evt["event"] == "on_chat_model_stream":
+                        print('on_chat_model_stream', evt["data"]['chunk'].content)
                         yield json.dumps({
                             "event": "on_chat_model_stream",
                             "data": evt["data"]['chunk'].content,
@@ -172,7 +169,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
 
                     elif evt["event"] == "on_chat_model_end":
                         result = evt["data"]["output"].content
-                        print(agent.name, "result", result)
+                        # print(agent.name, "result", result)
                         yield json.dumps({
                             "event": "on_chat_model_end",
                             "run_id": evt['run_id']
@@ -188,7 +185,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
 
 @router.post("/completion")
 @limiter.limit("10/minute")
-def completion(prompt: RearrangeSwarmPrompt, jwt: jwt_dependency, request: Request):
-    print('/rearrange-swarm/completion')
+def completion(prompt: SwarmDesignerPrompt, jwt: jwt_dependency, request: Request):
+    print('/swarm-designer/completion')
     print(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow)
     return StreamingResponse(generator(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow), media_type='text/event-stream')
