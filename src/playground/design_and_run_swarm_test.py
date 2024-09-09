@@ -307,7 +307,6 @@ async def design_and_run_swarm(task: str = None):
 
     async for out in build_and_run_swarm(agent_pool, task_for_agent):
         print(out)
-    # build_and_run_swarm(agent_pool, task_for_agent)
 
 async def main():
     await design_and_run_swarm(
