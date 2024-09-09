@@ -4,6 +4,7 @@ import os
 from loguru import logger
 from playground.models.base_llm import BaseLLM
 from typing import List
+import json
 
 
 class OpenAIFunctionCaller(BaseLLM):
@@ -112,7 +113,7 @@ class OpenAIFunctionCaller(BaseLLM):
 
             # Conver str to dict
             # print(out)
-            out = eval(out)
+            out = json.loads(out)
             return out
         except Exception as error:
             logger.error(
