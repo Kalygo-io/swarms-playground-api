@@ -27,7 +27,8 @@ agent_pool = []
 class AgentInfo(BaseModel):
     agent_name: str = Field(
         ...,
-        title="Financial Agent",
+        title="Agent name",
+        description="The name of the agent.",
     )
     # agent_description: str = Field(
     #     ...,
@@ -73,20 +74,20 @@ class SwarmLevel(BaseModel):
         ...,
         description="The list of agents participating in the swarm.",
     )
-    # communication_flow: str = Field(
-    #     ...,
-    #     description="""
-    #     Define the communication flow between the agents in the swarm.
-    #     Only output the names of the agents you have created, only output the flow of the agents followed by the name.
-    #     Use the arrow sign for sequential processing and or a comma for parallel processing.
-    #     Ensure that the names of the agents you pass are the same as the ones you have created,
-    #     if there are agents you have not created, do not include them in the flow. Only include maybe 3 agents in the flow at a time.
+    flow: str = Field(
+        ...,
+        description="""
+        Define the communication flow between the agents in the swarm.
+        Only output the names of the agents you have created, only output the flow of the agents followed by the name.
+        Use the arrow sign for sequential processing and or a comma for parallel processing.
+        Ensure that the names of the agents you pass are the same as the ones you have created,
+        if there are agents you have not created, do not include them in the flow. Maximum 7 agents can be in the flow at a time.
 
-    #     Follow this example Example:
-    #     Agent Name 1 -> Agent Name 2 -> Agent Name 3
-
-    #     """,
-    # )
+        Example A: Agent Name 1 -> Agent Name 2 -> Agent Name 3
+        Example B: Agent Name 1 -> Agent Name 2, Agent Name 3
+        Example C: Agent Name 1, Agent Name 2 -> Agent Name 3, Agent Name 4
+        """,
+    )
 
 
 BOSS_SYS_PROMPT = """
@@ -255,6 +256,7 @@ async def build_and_run_swarm(agents: list, prompt: str) -> AsyncGenerator[Any, 
                     final_output = evt["data"]["output"].content
 
                     final_output = final_output.replace('"', '""')
+                    
                     final_output = f'"{final_output}"'
                     for_csv += agent.name + "," + final_output + "\n"
 
@@ -312,7 +314,7 @@ async def main():
     await design_and_run_swarm(
         """
         Create a swarm of agents to that are specialized in every social media platform to market the swarms github framework which makes it easy for you to orchestrate and manage multiple agents in a swarm.
-        Create a minimum of 10 agents that are hyper-specialized in different areas of social media marketing.
+        Create 2 agents that are hyper-specialized in different areas of social media marketing.
 
         We need to promote the new SpreadSheet Swarm feature that allows you to run multiple agents in parallel and manage them from a single dashboard.
         Here is the link: https://docs.swarms.world/en/latest/swarms/structs/spreadsheet_swarm/
