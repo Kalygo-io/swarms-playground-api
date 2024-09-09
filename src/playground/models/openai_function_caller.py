@@ -87,6 +87,8 @@ class OpenAIFunctionCaller(BaseLLM):
 
         """
         try:
+            print('run...')
+
             completion = self.client.beta.chat.completions.parse(
                 model=self.model_name,
                 messages=[

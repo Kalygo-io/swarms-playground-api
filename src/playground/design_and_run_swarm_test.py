@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import uuid
@@ -5,12 +6,6 @@ from typing import Any, AsyncGenerator, List
 
 from loguru import logger
 from pydantic import BaseModel, Field
-
-# from swarms import (
-#     Agent,
-#     OpenAIChat,
-#     SpreadSheetSwarm,
-# )
 
 from playground.models.agent import Agent
 from langchain_openai import ChatOpenAI
@@ -20,6 +15,12 @@ from playground.models.openai_function_caller import OpenAIFunctionCaller
 from dotenv import load_dotenv
 
 load_dotenv()
+
+import debugpy
+import time
+
+# debugpy.listen(("0.0.0.0", 5678))
+# debugpy.wait_for_client()
 
 agent_pool = []
 
@@ -89,7 +90,6 @@ class SwarmLevel(BaseModel):
 
 
 BOSS_SYS_PROMPT = """
-
 You are a Director Boss Agent. Your primary responsibility is to manage a swarm of worker agents to efficiently, effectively, and skillfully serve the user. 
 You must decide whether to create new agents with specific capabilities or to delegate tasks to existing agents, ensuring that all operations are performed with maximum efficiency. 
 
@@ -116,10 +116,6 @@ You must decide whether to create new agents with specific capabilities or to de
    - Avoid using an agent if it is not necessary, and provide a clear explanation if no agents are suitable for a task.
 """
 
-print()
-print(os.getenv("OPENAI_API_KEY"))
-print()
-
 # Model
 model = OpenAIFunctionCaller(
     system_prompt=BOSS_SYS_PROMPT,
@@ -142,7 +138,9 @@ def create_agents_with_boss(
     pretty_out = json.dumps(out, indent=4)
 
     # Save the output to a file
-    with open(f"agent_workspace/{uuid.uuid4().hex}_agent_creation_dict", "w") as f:
+    
+    timestamp = str(int(time.time()))
+    with open(f"agent_workspace/agent_creation_dict_{timestamp}", "w") as f:
         f.write(pretty_out)
 
     return out
@@ -164,19 +162,18 @@ def create_agents(
         agent_name=agent_name,
         system_prompt=system_prompt,
         llm=llm_worker,
-        max_loops=1,
-        autosave=True,
-        dashboard=False,
-        verbose=True,
-        dynamic_temperature_enabled=True,
-        saved_state_path=f"{uuid.uuid4().hex}.json",
-        user_name="swarms_corp",
-        retry_attempts=1,
-        context_length=128000,
+        # max_loops=1,
+        # autosave=True,
+        # dashboard=False,
+        # verbose=True,
+        # dynamic_temperature_enabled=True,
+        # saved_state_path=f"{uuid.uuid4().hex}.json",
+        # user_name="swarms_corp",
+        # retry_attempts=1,
+        # context_length=128000,
     )
 
     return agent_created
-
 
 def parse_agents_from_dict(
     input: dict,
@@ -207,15 +204,7 @@ def parse_agents_from_dict(
 
         logger.info(f"Agent {agent_name} created successfully.")
 
-
 async def build_and_run_swarm(agents: list, prompt: str) -> AsyncGenerator[Any, Any]:
-    # swarm = SpreadSheetSwarm(
-    #     agents=agents,
-    #     max_loops=3,
-    #     save_file_path=f"spread_sheet_swarm{uuid.uuid4().hex}.csv",
-    # )
-
-
     loop_count = 0
 
     for_csv = "agent,output\n"
@@ -242,6 +231,9 @@ async def build_and_run_swarm(agents: list, prompt: str) -> AsyncGenerator[Any, 
                 #     print(agent.name, result)
 
                 if evt["event"] == "on_chat_model_start":
+                    print()
+                    print('on_chat_model_start')
+                    print()
                     yield json.dumps({
                         "event": "on_chat_model_start",
                         "run_id": evt['run_id'],
@@ -249,6 +241,9 @@ async def build_and_run_swarm(agents: list, prompt: str) -> AsyncGenerator[Any, 
                     }, separators=(',', ':'))
 
                 elif evt["event"] == "on_chat_model_stream":
+                    print()
+                    print('on_chat_model_stream')
+                    print()
                     yield json.dumps({
                         "event": "on_chat_model_stream",
                         "run_id": evt['run_id'],
@@ -267,18 +262,20 @@ async def build_and_run_swarm(agents: list, prompt: str) -> AsyncGenerator[Any, 
                         "event": "on_chat_model_end",
                         "run_id": evt['run_id']
                     }, separators=(',', ':'))
+            
             results.append(result)
 
         loop_count += 1
 
-    file_name =  f"agent_workspace/spreadsheet_swarm_{uuid.uuid4().hex}.csv"
+    timestamp = str(int(time.time()))
+
+    file_name = f"agent_workspace/spreadsheet_swarm_{timestamp}.csv"
 
     with open(file_name, "w") as f:
         f.write(for_csv)
 
 
     # return for_csv
-
 
 def log_swarm_data(
     input: dict,
@@ -292,8 +289,7 @@ def log_swarm_data(
     )
     return None
 
-
-def design_and_run_swarm(task: str = None):
+async def design_and_run_swarm(task: str = None):
     # First run the boss agent to get the dict of agents
     logger.info("Creating agents with the boss agent.")
     agents_dict = create_agents_with_boss(task)
@@ -309,16 +305,26 @@ def design_and_run_swarm(task: str = None):
     # Run the agents created by the boss
     logger.info("Running the agents.")
 
-    return build_and_run_swarm(agent_pool, task_for_agent)
+    async for out in build_and_run_swarm(agent_pool, task_for_agent):
+        print(out)
+    # build_and_run_swarm(agent_pool, task_for_agent)
+
+async def main():
+    await design_and_run_swarm(
+        """
+        Create a swarm of agents to that are specialized in every social media platform to market the swarms github framework which makes it easy for you to orchestrate and manage multiple agents in a swarm.
+        Create a minimum of 10 agents that are hyper-specialized in different areas of social media marketing.
+
+        We need to promote the new SpreadSheet Swarm feature that allows you to run multiple agents in parallel and manage them from a single dashboard.
+        Here is the link: https://docs.swarms.world/en/latest/swarms/structs/spreadsheet_swarm/
+        """
+    )
 
 
 # out = design_and_run_swarm(
 #     """
-#     Create a swarm of agents to that are specialized in every social media platform to market the swarms github framework which makes it easy for you to orchestrate and manage multiple agents in a swarm.
-#     Create a minimum of 10 agents that are hyper-specialized in different areas of social media marketing.
-
-#     We need to promote the new SpreadSheet Swarm feature that allows you to run multiple agents in parallel and manage them from a single dashboard.
-#     Here is the link: https://docs.swarms.world/en/latest/swarms/structs/spreadsheet_swarm/
+#     Create a swarm of 10 agents that are specialized for sending api requests to OpenAI's API across major programming languages like Python, JavaScript, Go, Rust, and more
+#     The agents must output the code snippet for sending an API request to OpenAI's API in the specified programming language.
 
 #     """
 # )
@@ -334,27 +340,16 @@ def design_and_run_swarm(task: str = None):
 # )
 # print(out)
 
+# async def main():
+#     await design_and_run_swarm(
+#         """
+#         Create a swarm of 10 agents that are specialized to create games in python using various new game design patterns that are completely novel and unseen before.
+#         The agent should output the python code for their game and only their game.
 
-# out = design_and_run_swarm(
-#     """
-#     Create a swarm of 10 agents that are specialized for sending api requests to OpenAI's API across major programming languages like Python, JavaScript, Go, Rust, and more
-#     The agents must output the code snippet for sending an API request to OpenAI's API in the specified programming language.
+#         Give them very novel and weird game ideas to implement, they should have different names
 
-#     """
-# )
-# print(out)
-
-
-# out = design_and_run_swarm(
-#     """
-#     Create a swarm of 10 agents that are specialized to create games in python using various new game design patterns that are completely novel and unseen before.
-#     The agent should output the python code for the their game and only their game.
-
-#     Give them very novel and weird game ideas to implement, they should have different names
-
-#     """
-# )
-# print(out)
+#         """
+#     )
 
 
 # out = design_and_run_swarm(
@@ -373,7 +368,7 @@ def design_and_run_swarm(task: str = None):
 
 # out = design_and_run_swarm(
 #     """
-#    Create a swarm of go to market strategists that are specialized in launching new products in swarms of agents.
+#    Create a swarm of go-to-market strategists that are specialized in launching new products in swarms of agents.
 
 #     The agents must output a detailed go to market strategy for launching a new product in the market. The
 #     agents should be specialized with different perpsectives in business, marketing, sales, and product development.
@@ -385,29 +380,40 @@ def design_and_run_swarm(task: str = None):
 # print(out)
 
 
-# out = design_and_run_swarm(
+# async def main():
+#     await design_and_run_swarm(
+#         """
+#         Create a swarm of agents for producing music together.
+
+#         One agent will be a songwriter, another one will be a marketing agent,
+#         another one will be a music producer, another one will be a sound engineer,
+#         another one will be a singer, another one will be a music video director,
+#         another one will be a music video editor, another one will be a music video producer,
+#         another one will be a music video marketer, another one will be a music video distributor.
+
+#         Create a swarm of agents that are specialized in promoting this new music.
+#         """
+#     )
+
+# async def main():
+#     await design_and_run_swarm(
+#         """
+#         Create a swarm of agents that will generate the python code to generate the qr codes for the following links:
+#         Telegram: https://t.me/+Sm4J-sSkw8c0ODA5
+#         • Discord: https://discord.gg/F8sSH4Gh
+#         https://lu.ma/GPTuesdays?k=c
+#         """
+#     )
+        
+
+asyncio.run(main())
+
+# out = await design_and_run_swarm(
 #     """
-#     Create a swarm of agents for producing music together.
-
-#     One agent will be a songwriter, another one will be a marketing agent,
-#     another one will be a music producer, another one will be a sound engineer,
-#     another one will be a singer, another one will be a music video director,
-#     another one will be a music video editor, another one will be a music video producer,
-#     another one will be a music video marketer, another one will be a music video distributor.
-
-#     Create a swarm of agents that are specialized in promoting this new music.
-
+#     Create a swarm of agents that will generate the python code to generate the qr codes for the following links:
+#     Telegram: https://t.me/+Sm4J-sSkw8c0ODA5
+#     • Discord: https://discord.gg/F8sSH4Gh
+#     https://lu.ma/GPTuesdays?k=c
 #     """
 # )
 # print(out)
-
-
-out = design_and_run_swarm(
-    """
-    Create a swarm of agents that will generate the python code to generate the qr codes for the following links:
-    Telegram: https://t.me/+Sm4J-sSkw8c0ODA5
-    • Discord: https://discord.gg/F8sSH4Gh
-    https://lu.ma/GPTuesdays?k=c
-    """
-)
-print(out)
