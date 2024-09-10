@@ -45,6 +45,8 @@ Documenting process of deploying Kalygo 3.0 A.I. API to GCP
 
   - ie: `echo -n "production" | gcloud secrets create ENVIRONMENT --data-file=-`
 
+  - ie: `echo -n "https://demo.swarms.world" | gcloud secrets create API_HOSTNAME --data-file=-`
+
   <!-- v NOT NEEDED? v --->
   - ie: `echo -n "embedding api url" | gcloud secrets create EMBEDDING_API_URL --data-file=-`
   - ie: `echo -n "REPLICATE_API_TOKEN" | gcloud secrets create REPLICATE_API_TOKEN --data-file=-`
@@ -99,6 +101,10 @@ Documenting process of deploying Kalygo 3.0 A.I. API to GCP
   --role="roles/secretmanager.secretAccessor"
 
 - gcloud secrets add-iam-policy-binding WORKSPACE_DIR \
+  --member="serviceAccount:137963986378-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+
+- gcloud secrets add-iam-policy-binding API_HOSTNAME \
   --member="serviceAccount:137963986378-compute@developer.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 

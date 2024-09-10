@@ -94,6 +94,12 @@ spec:
                   name: GCS_SA
                   key: latest
 
+            - name: API_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: API_HOSTNAME
+                  key: latest
+
             # - name: SERPER_API_KEY
             #   valueFrom:
             #     secretKeyRef:
