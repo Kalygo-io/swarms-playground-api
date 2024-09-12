@@ -4,6 +4,7 @@ import threading
 
 import debugpy
 from dotenv import load_dotenv
+from langchain_anthropic import ChatAnthropic
 import pydantic
 from src.playground.generate_documentation.prompts.documentation_writer import DOCUMENTATION_WRITER
 from src.playground.generate_documentation.prompts.kids_documentation_writer import KIDS_DOCUMENTATION_WRITER
@@ -22,11 +23,13 @@ import json
 
 load_dotenv()
 
-model = ChatOpenAI(
-    max_tokens=4000,
-    model='gpt-4o',
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+# model = ChatOpenAI(
+#     max_tokens=4000,
+#     model='gpt-4o',
+#     api_key=os.getenv("OPENAI_API_KEY")
+# )
+
+model = ChatAnthropic(model="claude-3-5-sonnet-20240620", anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 def collect_schema(folder_path):
     """
@@ -99,8 +102,8 @@ def process_documentation(cls):
 
 
 def main():
-    debugpy.listen(("0.0.0.0", 5678))
-    debugpy.wait_for_client()
+    # debugpy.listen(("0.0.0.0", 5678))
+    # debugpy.wait_for_client()
 
     modules = [
         streamRearrangeSwarm,
