@@ -7,7 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 
-from .routers import noRagAgent, healthcheck, auth, recommendations, logins, multimodal, rearrangeSwarm, spreadsheetSwarm, swarmDesigner
+from .routers import noRagAgent, healthcheck, auth, recommendations, logins, multimodal, rearrangeSwarm, spreadsheetSwarm, designAndRunSwarm
 
 from .db.database import Base, engine
 
@@ -15,7 +15,7 @@ import debugpy
 
 load_dotenv()
 
-debugpy.listen(("0.0.0.0", 5678))
+# debugpy.listen(("0.0.0.0", 5678))
 # debugpy.wait_for_client()
 
 app = FastAPI(docs_url=None, redoc_url=None)
@@ -100,7 +100,7 @@ app.include_router(
 )
 
 app.include_router(
-    swarmDesigner.router,
-    prefix="/api/swarm-designer",
+    designAndRunSwarm.router,
+    prefix="/api/design-and-run-swarm",
     tags=['Swarm Designer'],
 )

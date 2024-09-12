@@ -8,9 +8,9 @@ from langchain_openai import ChatOpenAI
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from core.helpers.get_principal import get_principal
-from core.helpers.upload_csv_to_gcs import upload_csv_to_gcs
-from core.schemas.SpreadsheetSwarmPrompt import SpreadsheetSwarmPrompt
+from src.core.helpers.get_principal import get_principal
+from src.core.helpers.upload_csv_to_gcs import upload_csv_to_gcs
+from src.core.schemas.SpreadsheetSwarmPrompt import SpreadsheetSwarmPrompt
 
 import json
 import os
@@ -182,9 +182,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict):
         "link": signed_url
     }, separators=(',', ':'))
 
-@router.post("/completion")
+@router.post("/stream")
 @limiter.limit("10/minute")
-def prompt(prompt: SpreadsheetSwarmPrompt, jwt: jwt_dependency, request: Request):
-    print('/spreadsheet-swarm/completion')
-    print(prompt.sessionId, prompt.content, prompt.agentsConfig)
+def streamSpreadsheetSwarm(prompt: SpreadsheetSwarmPrompt, jwt: jwt_dependency, request: Request):
     return StreamingResponse(generator(prompt.sessionId, prompt.content, prompt.agentsConfig), media_type='text/event-stream')

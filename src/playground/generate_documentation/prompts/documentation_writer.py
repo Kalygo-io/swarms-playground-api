@@ -2,15 +2,16 @@ def DOCUMENTATION_WRITER(
   task: str,
   module: str,
 ):
-    documentation = f"""Create multi-page long and explicit professional pytorch-like documentation for the {module} code below follow the outline for the {module} library,
-provide many examples and teach the user about the code, provide examples for every function, make the documentation 10,000 words,
-provide many usage examples and note this is markdown docs, create the documentation for the code to document,
-put the arguments and methods in a table in markdown to make it visually seamless.
+    documentation = f"""Create multi-page long and professional documentation for the {module} code below following the outline of the {module} library,
+provide many examples and teach the user about the code, provide examples for every function, make the documentation clear and concise,
+provide many examples and note this is markdown documentation.
 
-Now make the professional documentation for this code, provide the architecture and how the class works and why it works that way,
-it's purpose, provide args, their types, 3 ways of usage examples, in examples show all the code like imports main example etc.
+Create the documentation for the code and put methods and arguments in a markdown table to make it visually seamless.
 
-BE VERY EXPLICIT AND THOROUGH, MAKE IT DEEP AND USEFUL
+Provide the architecture and explain simply how works and why it works that way,
+it's purpose, provide args, their types, 3 ways of using the code via examples, and in the examples show all the code including imports etc.
+
+BE VERY EXPLICIT AND THOROUGH, MAKE IT DEEP AND USEFUL TO THE READER.
 
 ########
 
@@ -47,6 +48,7 @@ Step 6: Include references and resources
 
 Include references to any external resources or research papers that provide further information or background on the module or framework.
 Provide links to relevant documentation or websites for further exploration.
+
 Example Template for the given documentation:
 
 # Module/Function Name: MultiheadAttention
@@ -99,9 +101,7 @@ class torch.nn.MultiheadAttention(embed_dim, num_heads, dropout=0.0, bias=True, 
         multihead_attn = nn.MultiheadAttention(embed_dim, num_heads)
         attn_output, attn_output_weights = multihead_attn(query, key, value)
         
-Note:
-
-The above template includes the class or function definition, parameters, description, and usage example.
+Note: The above template includes the class or function definition, parameters, description, and usage example.
 To replicate the documentation for any other module or framework, follow the same structure and provide the specific details for that module or framework.
 
 ############ DOCUMENT THE FOLLOWING CODE ############

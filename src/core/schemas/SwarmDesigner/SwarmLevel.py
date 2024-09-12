@@ -1,7 +1,7 @@
 from typing import List
 from pydantic import BaseModel, Field
 
-from core.schemas.SwarmDesigner.AgentInfo import AgentInfo
+from src.core.schemas.SwarmDesigner.AgentInfo import AgentInfo
 
 class SwarmLevel(BaseModel):
     swarm_name: str = Field(

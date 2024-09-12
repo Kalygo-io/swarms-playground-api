@@ -6,7 +6,7 @@ from langchain_postgres import PostgresChatMessageHistory
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from core.classes.agent import Agent
+from src.core.classes.agent import Agent
 from src.core.schemas.SwarmDesigner.SwarmDesignerPrompt import SwarmDesignerPrompt
 
 import json
@@ -32,15 +32,9 @@ router = APIRouter()
 
 async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig: str):
 
-    print('--- generator ---')
-
     llm = ChatOpenAI(model='gpt-4o-mini', api_key=os.getenv("OPENAI_API_KEY"))
 
     agents = []
-    
-    print()
-    print('agentsConfig', agentsConfig)
-    print()
 
     for a in agentsConfig:
         agents.append(Agent(
@@ -183,9 +177,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
                     )
         loop_count += 1
 
-@router.post("/completion")
+@router.post("/stream")
 @limiter.limit("10/minute")
-def completion(prompt: SwarmDesignerPrompt, jwt: jwt_dependency, request: Request):
-    print('/swarm-designer/completion')
-    print(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow)
+def streamDesignAndRunSwarm(prompt: SwarmDesignerPrompt, jwt: jwt_dependency, request: Request):
     return StreamingResponse(generator(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow), media_type='text/event-stream')

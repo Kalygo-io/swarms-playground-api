@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request
 # from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 from langchain_postgres import PostgresChatMessageHistory
-from core.classes.agent import Agent
+from src.core.classes.agent import Agent
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -198,9 +198,7 @@ async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig:
                 # current_task = result
         loop_count += 1
 
-@router.post("/completion")
+@router.post("/stream")
 @limiter.limit("10/minute")
-def prompt(prompt: RearrangeSwarmPrompt, jwt: jwt_dependency, request: Request):
-    print('/rearrange-swarm/completion')
-    print(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow)
+def streamRearrangeSwarm(prompt: RearrangeSwarmPrompt, jwt: jwt_dependency, request: Request):
     return StreamingResponse(generator(prompt.sessionId, prompt.content, prompt.agentsConfig, prompt.flow), media_type='text/event-stream')

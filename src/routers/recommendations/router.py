@@ -18,7 +18,6 @@ class Query(BaseModel):
 @router.post("/workouts")
 @limiter.limit("10/minute")
 def workouts(jwt: jwt_dependency, query: Query, request: Request):
-    
     index = pc.Index(os.getenv("PINECONE_ALL_MINILM_L6_V2_INDEX"))
     
     resp = requests.post(

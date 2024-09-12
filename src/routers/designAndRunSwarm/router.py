@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .completion import router as completion
+from .stream import router as stream
 from .healthcheck import router as healthcheck
 from .designSwarm import router as designSwarm
 
@@ -7,6 +7,6 @@ from .designSwarm import router as designSwarm
 router = APIRouter()
 
 # Include the individual routers from each endpoint file
-router.include_router(completion)
+router.include_router(stream)
 router.include_router(healthcheck)
 router.include_router(designSwarm)
