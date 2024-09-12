@@ -4,10 +4,10 @@ import os
 
 from slowapi.util import get_remote_address
 from slowapi import Limiter
-from src.core.classes.SwarmDesigner.openai_function_caller import OpenAIFunctionCaller
+from src.core.classes.DesignAndRunSwarm.openai_function_caller import OpenAIFunctionCaller
 from src.core.prompts.BOSS_SYS_PROMPT import BOSS_SYS_PROMPT
-from src.core.schemas.SwarmDesigner.SwarmLevel import SwarmLevel
-from src.core.schemas.SwarmDesigner.DesignSwarmPrompt import DesignSwarmPrompt
+from src.core.schemas.DesignAndRunSwarm.SwarmLevel import SwarmLevel
+from src.core.schemas.DesignAndRunSwarm.DesignSwarmPrompt import DesignSwarmPrompt
 
 from src.deps import jwt_dependency
 

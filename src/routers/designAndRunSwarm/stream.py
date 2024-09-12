@@ -7,7 +7,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from src.core.classes.agent import Agent
-from src.core.schemas.SwarmDesigner.SwarmDesignerPrompt import SwarmDesignerPrompt
+from src.core.schemas.DesignAndRunSwarm.SwarmDesignerPrompt import SwarmDesignerPrompt
 
 import json
 import os

@@ -6,8 +6,8 @@ import debugpy
 from dotenv import load_dotenv
 from langchain_anthropic import ChatAnthropic
 import pydantic
-from src.playground.generate_documentation.prompts.documentation_writer import DOCUMENTATION_WRITER
-from src.playground.generate_documentation.prompts.kids_documentation_writer import KIDS_DOCUMENTATION_WRITER
+from src.playground.prompts.documentation_writer import DOCUMENTATION_WRITER
+from src.playground.prompts.kids_documentation_writer import KIDS_DOCUMENTATION_WRITER
 from langchain_openai import ChatOpenAI
 
 ########## Importing the classes you would like to generate documentation for here ##########
@@ -23,13 +23,13 @@ import json
 
 load_dotenv()
 
-# model = ChatOpenAI(
-#     max_tokens=4000,
-#     model='gpt-4o',
-#     api_key=os.getenv("OPENAI_API_KEY")
-# )
+model = ChatOpenAI(
+    max_tokens=4000,
+    model='gpt-4o',
+    api_key=os.getenv("OPENAI_API_KEY")
+)
 
-model = ChatAnthropic(model="claude-3-5-sonnet-20240620", anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"))
+# model = ChatAnthropic(model="claude-3-5-sonnet-20240620", anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 def collect_schema(folder_path):
     """
@@ -123,7 +123,7 @@ def main():
     for thread in threads:
         thread.join()
 
-    print("Documentation generated in 'workspace' directory.")
+    print("Documentation generated.")
 
 if __name__ == "__main__":
     main()
