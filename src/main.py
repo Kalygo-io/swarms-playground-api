@@ -48,15 +48,16 @@ app.add_middleware(SlowAPIMiddleware)
 
 app.include_router(healthcheck.router, prefix="")
 
-app.include_router(
-    noRagAgent.router,
-    prefix="/api/no-rag-agent",
-)
+# app.include_router(
+#     noRagAgent.router,
+#     prefix="/api/no-rag-agent",
+# )
 
 # app.include_router(
 #     ragAgent.router,
 #     prefix="/rag-agent",
 # )
+
 # app.include_router(
 #     reActAgent.router,
 #     prefix="/react-agent",
@@ -68,11 +69,12 @@ app.include_router(
     tags=['auth'],
 )
 
-app.include_router(
-    recommendations.router,
-    prefix="/api/recommendations",
-    tags=['recommendations'],
-)
+# app.include_router(
+#     recommendations.router,
+#     prefix="/api/recommendations",
+#     tags=['recommendations'],
+# )
+
 app.include_router(
     logins.router,
     prefix="/api/logins",

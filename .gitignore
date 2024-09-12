@@ -171,3 +171,5 @@ cython_debug/
 *-sa.json
 
 agent_workspace/*
+
+workspace/*

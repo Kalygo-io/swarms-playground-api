@@ -20,11 +20,6 @@ from langchain.callbacks import LangChainTracer
 import psycopg
 from src.deps import jwt_dependency
 
-# vvv SWARM imports vvv
-# from src.core.local_swarms.swarms.structs import Agent
-
-# ^^^ SWARM imports ^^^
-
 limiter = Limiter(key_func=get_remote_address)
 
 from dotenv import load_dotenv
