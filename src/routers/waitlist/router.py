@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from jose import jwt
 from dotenv import load_dotenv
 import os
-from db.waitlist import Waitlist
+from src.db.waitlist import Waitlist
 from src.db.models import Account
 from src.routers.auth.background_tasks import record_login
 from src.routers.auth.background_tasks.send_reset_password_link_email_ses import send_reset_password_link_email_ses
