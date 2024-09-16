@@ -7,9 +7,9 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 
-from .routers import noRagAgent, healthcheck, auth, recommendations, logins, multimodal, rearrangeSwarm, spreadsheetSwarm, designAndRunSwarm
+from .routers import noRagAgent, healthcheck, auth, recommendations, logins, multimodal, rearrangeSwarm, spreadsheetSwarm, designAndRunSwarm, waitlist
 
-from .db.database import Base, engine
+from src.db.database import Base, engine
 
 import debugpy
 
@@ -67,6 +67,12 @@ app.include_router(
     auth.router,
     prefix='/api/auth',
     tags=['auth'],
+)
+
+app.include_router(
+    waitlist.router,
+    prefix='/api/waitlist',
+    tags=['waitlist'],
 )
 
 # app.include_router(

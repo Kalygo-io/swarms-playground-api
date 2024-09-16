@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query as FastAPIQuery, Request
 from pydantic import BaseModel
 from src.deps import db_dependency, jwt_dependency
 
-from core.clients import pc
+from src.core.clients import pc
 import os
 import requests
 

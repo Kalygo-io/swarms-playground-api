@@ -1,8 +1,9 @@
 def DOCUMENTATION_WRITER(
+    name_of_module: str,
+    path_to_module: str
   task: str,
-  module: str,
 ):
-    documentation = f"""Create multi-page long and professional documentation for the {module} code below following the outline of the {module} library,
+    documentation = f"""Create multi-page long and professional documentation for the code below,
 provide many examples and teach the user about the code, provide examples for every function, make the documentation clear and concise,
 provide many examples and note this is markdown documentation.
 

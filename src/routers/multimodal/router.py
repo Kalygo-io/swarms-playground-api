@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import replicate
 from src.deps import jwt_dependency
 import os
-from core.clients import pc
+from src.core.clients import pc
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address

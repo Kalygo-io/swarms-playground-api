@@ -1,6 +1,7 @@
 from typing import Any, Optional
 from fastapi import APIRouter, Request
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from langchain_postgres import PostgresChatMessageHistory
 
 from slowapi import Limiter
@@ -33,6 +34,7 @@ router = APIRouter()
 async def generator(sessionId: str, prompt: str, agentsConfig: dict, flowConfig: str):
 
     llm = ChatOpenAI(model='gpt-4o-mini', api_key=os.getenv("OPENAI_API_KEY"))
+    # model = ChatAnthropic(model="claude-3-5-sonnet-20240620", anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     agents = []
 

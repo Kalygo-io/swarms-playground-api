@@ -5,7 +5,7 @@ from langchain_postgres import PostgresChatMessageHistory
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from core.schemas.ChatSessionPrompt import ChatSessionPrompt
+from src.core.schemas.ChatSessionPrompt import ChatSessionPrompt
 
 import json
 import os

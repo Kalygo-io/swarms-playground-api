@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # copy src code
 COPY ./src ./src
 
-ENV PYTHONPATH=/code/src
+ENV PYTHONPATH=/code
 
 EXPOSE 8080
 

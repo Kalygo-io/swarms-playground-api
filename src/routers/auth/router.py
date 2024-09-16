@@ -5,10 +5,10 @@ from pydantic import BaseModel
 from jose import jwt
 from dotenv import load_dotenv
 import os
-from db.models import Account
-from routers.auth.background_tasks import record_login
-from routers.auth.background_tasks.send_reset_password_link_email_ses import send_reset_password_link_email_ses
-from routers.auth.background_tasks.send_password_has_been_reset_email_ses import send_password_has_been_reset_email_ses
+from src.db.models import Account
+from src.routers.auth.background_tasks import record_login
+from src.routers.auth.background_tasks.send_reset_password_link_email_ses import send_reset_password_link_email_ses
+from src.routers.auth.background_tasks.send_password_has_been_reset_email_ses import send_password_has_been_reset_email_ses
 from src.deps import db_dependency, bcrypt_context
 
 from slowapi import Limiter

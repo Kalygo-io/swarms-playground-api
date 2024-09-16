@@ -1,45 +1,79 @@
-# Agent
-
-# File: tests/test_agent.py
-
 import pytest
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, patch, create_autospec
 from src.core.classes.agent import Agent
 
+# Fixture to create an Agent instance
 @pytest.fixture
-def mock_llm():
-    """Fixture to create a mock LLM"""
-    return AsyncMock()
+def agent():
+    mock_llm = create_autospec(AsyncMock)
+    return Agent(llm=mock_llm, agent_name="TestAgent", system_prompt="TestPrompt")
 
-@pytest.fixture
-def agent(mock_llm):
-    """Fixture to create an Agent instance"""
-    return Agent(llm=mock_llm, agent_name="TestAgent", system_prompt="Test Prompt")
-
-def test_agent_initialization(agent, mock_llm):
-    """Test the initialization of the Agent object"""
-    assert agent.llm == mock_llm
+# Test __init__ method
+def test_agent_initialization(agent):
+    assert agent.llm is not None
     assert agent.name == "TestAgent"
-    assert agent.system_prompt == "Test Prompt"
+    assert agent.system_prompt == "TestPrompt"
 
-def test_agent_initialization_defaults():
-    """Test the default initialization of the Agent object"""
-    agent = Agent()
-    assert agent.llm is None
-    assert agent.name == ""
-    assert agent.system_prompt == ""
-
+# Test astream_events method with successful event streaming
 @pytest.mark.asyncio
-async def test_astream_events_monkeypatch(agent, monkeypatch):
-    """Test the astream_events method using monkeypatch"""
-    async def mock_astream_events(*args, **kwargs):
-        for event in ["event1", "event2"]:
-            yield event
+async def test_astream_events_success(agent):
+    mock_event = {"event": "test_event"}
+    agent.llm.astream_events = AsyncMock(return_value=mock_event)
+    
+    events = [event async for event in agent.astream_events(task="test_task")]
+    
+    assert events == mock_event
 
-    monkeypatch.setattr(agent.llm, "astream_events", mock_astream_events)
+# Test astream_events method when an exception is raised
+@pytest.mark.asyncio
+async def test_astream_events_exception(agent, capsys):
+    agent.llm.astream_events.side_effect = Exception("Streaming Error")
+    
+    events = [event async for event in agent.astream_events(task="test_task")]
+    
+    assert len(events) == 0
+    captured = capsys.readouterr()
+    assert "Error streaming events: Streaming Error" in captured.out
 
-    events = []
-    async for event in agent.astream_events(task="test_task"):
-        events.append(event)
+# Test astream_events with various parameterizations
+@pytest.mark.asyncio
+@pytest.mark.parametrize("task, img, expected", [
+    ("task1", None, {"event": "test_event_1"}),
+    ("task2", "image_data", {"event": "test_event_2"}),
+])
+async def test_astream_events_parameters(agent, task, img, expected):
+    agent.llm.astream_events = AsyncMock(return_value=expected)
+    
+    events = [event async for event in agent.astream_events(task=task, img=img)]
+    
+    assert events == expected
 
-    assert events == ["event1", "event2"]
+# Test for proper handling of missing task parameter
+@pytest.mark.asyncio
+async def test_astream_events_no_task(agent):
+    mock_event = {"event": "test_event_no_task"}
+    agent.llm.astream_events = AsyncMock(return_value=mock_event)
+    
+    events = [event async for event in agent.astream_events()]
+    
+    assert events == mock_event
+
+# Test for proper handling of additional arguments
+@pytest.mark.asyncio
+async def test_astream_events_with_additional_args(agent):
+    mock_event = {"event": "test_event_with_additional_args"}
+    agent.llm.astream_events = AsyncMock(return_value=mock_event)
+    
+    events = [event async for event in agent.astream_events(task="test_task", additional_arg="value")]
+    
+    assert events == mock_event
+
+# Test for proper handling of keyword arguments
+@pytest.mark.asyncio
+async def test_astream_events_with_kwargs(agent):
+    mock_event = {"event": "test_event_with_kwargs"}
+    agent.llm.astream_events = AsyncMock(return_value=mock_event)
+    
+    events = [event async for event in agent.astream_events(task="test_task", kwarg_key="kwarg_value")]
+    
+    assert events == mock_event

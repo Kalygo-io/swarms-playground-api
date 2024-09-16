@@ -1,8 +1,8 @@
 from datetime import timedelta, datetime, timezone
-from services import fetch_embedding
+from src.services import fetch_embedding
 from pinecone import Pinecone
 import os
-from db.models import Account, Logins
+from src.db.models import Account, Logins
 import hashlib
 
 async def record_login(account_id: int, account_email: str, ip_address: str, db):
