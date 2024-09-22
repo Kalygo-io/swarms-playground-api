@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from db.models import Base # NOTE: for integrating SQLAlchemy schema with Alembic for autogeneration
+from src.db.models import Base # NOTE: for integrating SQLAlchemy schema with Alembic for autogeneration
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
