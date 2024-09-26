@@ -1,5 +1,5 @@
 {
-    "name": "A.I. FastAPI Devcontainer",
+    "name": "Swarms Playground FastAPI Devcontainer",
     "build": {
       "dockerfile": "../Dockerfile.dev"
     },
