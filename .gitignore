@@ -175,3 +175,5 @@ agent_workspace/*
 workspace/*
 
 scratch/*
+
+db_backup.dump
