@@ -1,6 +1,6 @@
 # TLDR
 
-Kalygo 3.0 A.I. API (powered by FastAPI)
+SWARMS Playground API (powered by FastAPI)
 
 ## How to run the FastAPI
 
